@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 const CATEGORIES = [
@@ -5,36 +6,35 @@ const CATEGORIES = [
     href: '/shop/women',
     label: 'Women',
     sub: 'Gowns, jackets, blouses & more',
-    bg: 'bg-arca-bone',
-    accent: 'text-arca-charcoal',
+    image: 'https://kpgjktaxddcbsvbowxwx.supabase.co/storage/v1/object/public/product-images/bridalGowns/bridal_gowns1.jpg',
+    dark: false,
   },
   {
     href: '/shop/men',
     label: 'Men',
     sub: 'Tailoring, footwear & leather',
-    bg: 'bg-arca-cream',
-    accent: 'text-arca-charcoal',
+    image: 'https://kpgjktaxddcbsvbowxwx.supabase.co/storage/v1/object/public/product-images/tailoredSuits/tailoredSuits-4.jpeg',
+    dark: false,
   },
   {
     href: '/shop/watches',
     label: 'Watches',
     sub: 'Fine timepieces & haute horlogerie',
-    bg: 'bg-[#EEE9E0]',
-    accent: 'text-arca-charcoal',
+    image: 'https://kpgjktaxddcbsvbowxwx.supabase.co/storage/v1/object/public/product-images/analogueDressWatches/Analogue%20Dress%20Watches1.jpeg',
+    dark: false,
   },
   {
     href: '/shop/jewellery',
     label: 'Jewellery',
     sub: 'Rings, necklaces & fine stones',
-    bg: 'bg-arca-ink',
-    accent: 'text-arca-sand',
+    image: 'https://kpgjktaxddcbsvbowxwx.supabase.co/storage/v1/object/public/product-images/bracelets/bracelet1.jpeg',
+    dark: true,
   },
 ]
 
 export function CategoryGrid() {
   return (
     <section className="max-w-screen-xl mx-auto px-6 py-24">
-      {/* Section header */}
       <div className="flex items-end justify-between mb-12">
         <h2 className="font-display text-4xl font-light tracking-tight text-arca-ink">
           Shop by Category
@@ -47,25 +47,37 @@ export function CategoryGrid() {
         </Link>
       </div>
 
-      {/* Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {CATEGORIES.map(cat => (
           <Link
             key={cat.href}
             href={cat.href}
-            className={`group relative flex flex-col justify-end p-6 min-h-[280px] md:min-h-[360px] ${cat.bg} hover:opacity-90 transition-opacity`}
+            className="group relative flex flex-col justify-end min-h-[280px] md:min-h-[360px] overflow-hidden"
           >
-            {/* Decorative corner mark */}
-            <span className="absolute top-4 right-4 w-4 h-4 border-t border-r border-current opacity-20 group-hover:opacity-60 transition-opacity" />
+            {/* Product image */}
+            <Image
+              src={cat.image}
+              alt={cat.label}
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+            />
 
-            <div>
-              <p className={`text-[10px] tracking-arca uppercase mb-2 opacity-60 ${cat.accent}`}>
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+            {/* Decorative corner */}
+            <span className="absolute top-4 right-4 w-4 h-4 border-t border-r border-white/30 group-hover:border-white/70 transition-colors" />
+
+            {/* Text */}
+            <div className="relative z-10 p-6">
+              <p className="text-[10px] tracking-arca uppercase mb-2 text-white/60">
                 {cat.sub}
               </p>
-              <h3 className={`font-display text-3xl font-light ${cat.accent}`}>
+              <h3 className="font-display text-3xl font-light text-white">
                 {cat.label}
               </h3>
-              <div className={`mt-3 flex items-center gap-2 text-[10px] tracking-arca uppercase ${cat.accent} opacity-0 group-hover:opacity-100 transition-opacity`}>
+              <div className="mt-3 flex items-center gap-2 text-[10px] tracking-arca uppercase text-white/0 group-hover:text-white/90 transition-all duration-200">
                 <span>Shop now</span>
                 <span>→</span>
               </div>

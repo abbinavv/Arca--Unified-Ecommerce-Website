@@ -1,4 +1,8 @@
+import Image from 'next/image'
 import Link from 'next/link'
+
+const IMG_WATCH = 'https://kpgjktaxddcbsvbowxwx.supabase.co/storage/v1/object/public/product-images/machanicalWatches/mechanicalwatch1.jpeg'
+const IMG_JEWEL = 'https://kpgjktaxddcbsvbowxwx.supabase.co/storage/v1/object/public/product-images/chokerNecklaces/choker_set1.jpg'
 
 export function BrandStorySection() {
   return (
@@ -32,13 +36,32 @@ export function BrandStorySection() {
             </Link>
           </div>
 
-          {/* Visual column — editorial grid of tonal panels */}
+          {/* Visual column */}
           <div className="hidden md:grid grid-cols-2 gap-3 h-[480px]">
-            <div className="bg-arca-charcoal rounded-none" />
+            {/* Left tall image */}
+            <div className="relative overflow-hidden">
+              <Image
+                src={IMG_WATCH}
+                alt="Grand Complication timepiece"
+                fill
+                sizes="20vw"
+                className="object-cover object-center"
+              />
+            </div>
+
+            {/* Right: two stacked */}
             <div className="flex flex-col gap-3">
-              <div className="flex-1 bg-[#1C1C1A]" />
-              <div className="h-24 bg-arca-gold/20 flex items-center justify-center">
-                <span className="font-display text-2xl font-light tracking-[0.3em] uppercase text-arca-gold/60">
+              <div className="relative flex-1 overflow-hidden">
+                <Image
+                  src={IMG_JEWEL}
+                  alt="Fine jewellery"
+                  fill
+                  sizes="20vw"
+                  className="object-cover object-center"
+                />
+              </div>
+              <div className="h-24 bg-arca-gold/20 flex items-center justify-center flex-shrink-0">
+                <span className="font-display text-2xl font-light tracking-[0.3em] uppercase text-arca-gold/80">
                   Arca
                 </span>
               </div>
