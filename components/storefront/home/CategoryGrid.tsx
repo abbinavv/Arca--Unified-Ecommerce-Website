@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Link from 'next/link'
 
 const CATEGORIES = [
@@ -7,28 +6,24 @@ const CATEGORIES = [
     label: 'Women',
     sub: 'Gowns, jackets, blouses & more',
     image: 'https://kpgjktaxddcbsvbowxwx.supabase.co/storage/v1/object/public/product-images/bridalGowns/bridal_gowns1.jpg',
-    dark: false,
   },
   {
     href: '/shop/men',
     label: 'Men',
     sub: 'Tailoring, footwear & leather',
     image: 'https://kpgjktaxddcbsvbowxwx.supabase.co/storage/v1/object/public/product-images/tailoredSuits/tailoredSuits-4.jpeg',
-    dark: false,
   },
   {
     href: '/shop/watches',
     label: 'Watches',
     sub: 'Fine timepieces & haute horlogerie',
     image: 'https://kpgjktaxddcbsvbowxwx.supabase.co/storage/v1/object/public/product-images/analogueDressWatches/Analogue%20Dress%20Watches1.jpeg',
-    dark: false,
   },
   {
     href: '/shop/jewellery',
     label: 'Jewellery',
     sub: 'Rings, necklaces & fine stones',
     image: 'https://kpgjktaxddcbsvbowxwx.supabase.co/storage/v1/object/public/product-images/bracelets/bracelet1.jpeg',
-    dark: true,
   },
 ]
 
@@ -52,19 +47,11 @@ export function CategoryGrid() {
           <Link
             key={cat.href}
             href={cat.href}
-            className="group relative flex flex-col justify-end min-h-[280px] md:min-h-[360px] overflow-hidden"
+            className="group relative flex flex-col justify-end min-h-[280px] md:min-h-[360px] overflow-hidden bg-arca-bone"
+            style={{ backgroundImage: `url('${cat.image}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
           >
-            {/* Product image */}
-            <Image
-              src={cat.image}
-              alt={cat.label}
-              fill
-              sizes="(max-width: 768px) 50vw, 25vw"
-              className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
-            />
-
             {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-opacity group-hover:from-black/80" />
 
             {/* Decorative corner */}
             <span className="absolute top-4 right-4 w-4 h-4 border-t border-r border-white/30 group-hover:border-white/70 transition-colors" />

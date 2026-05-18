@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Link from 'next/link'
 
 const HERO_IMAGE = 'https://kpgjktaxddcbsvbowxwx.supabase.co/storage/v1/object/public/product-images/skeletonWatches/Skeleton%20Watches1.jpeg'
@@ -9,16 +8,11 @@ export function HeroSection() {
       {/* Split panels */}
       <div className="absolute inset-0 flex">
         <div className="w-1/2 h-full bg-arca-bone" />
-        <div className="relative w-1/2 h-full">
-          <Image
-            src={HERO_IMAGE}
-            alt="Arca — Fine timepiece"
-            fill
-            sizes="50vw"
-            className="object-cover object-center"
-            priority
-          />
-          <div className="absolute inset-0 bg-arca-ink/10" />
+        <div
+          className="w-1/2 h-full bg-center bg-cover"
+          style={{ backgroundImage: `url('${HERO_IMAGE}')` }}
+        >
+          <div className="w-full h-full bg-arca-ink/10" />
         </div>
       </div>
 
