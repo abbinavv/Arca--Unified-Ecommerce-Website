@@ -63,9 +63,27 @@ export default function ClientelingPage() {
         <p className="text-sm text-arca-stone">Searching…</p>
       )}
 
+      {!loading && !searched && (
+        <div className="border border-arca-sand py-20 text-center">
+          <div className="w-10 h-10 border border-arca-sand mx-auto mb-4 flex items-center justify-center">
+            <svg className="w-5 h-5 text-arca-stone" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <p className="text-sm text-arca-ink mb-1">No clients found</p>
+          <p className="text-xs text-arca-stone">Search by name, email, or phone</p>
+        </div>
+      )}
+
       {!loading && searched && results.length === 0 && (
-        <div className="border border-arca-sand py-12 text-center">
-          <p className="text-sm text-arca-stone">No clients found for "{query}"</p>
+        <div className="border border-arca-sand py-20 text-center">
+          <div className="w-10 h-10 border border-arca-sand mx-auto mb-4 flex items-center justify-center">
+            <svg className="w-5 h-5 text-arca-stone" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <p className="text-sm text-arca-ink mb-1">No clients found</p>
+          <p className="text-xs text-arca-stone">No results for &ldquo;{query}&rdquo;</p>
         </div>
       )}
 

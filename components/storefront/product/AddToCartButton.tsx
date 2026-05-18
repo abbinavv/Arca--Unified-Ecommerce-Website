@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useCartStore } from '@/stores/cartStore'
+import { createClient } from '@/lib/supabase/client'
 
 type Props = {
   product: {
@@ -24,10 +25,35 @@ type FulfillmentType = 'standard' | 'bopis' | 'ship_from_store'
 export function AddToCartButton({ product }: Props) {
   const addItem = useCartStore(s => s.addItem)
   const openCart = useCartStore(s => s.openCart)
+  const cartItems = useCartStore(s => s.items)
   const [fulfillment, setFulfillment] = useState<FulfillmentType>('standard')
   const [added, setAdded] = useState(false)
+  const [availableQty, setAvailableQty] = useState<number | null>(null)
+  const [stockLoading, setStockLoading] = useState(true)
+
+  useEffect(() => {
+    async function checkStock() {
+      setStockLoading(true)
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('inventory')
+        .select('available_qty')
+        .eq('product_id', product.id)
+        .limit(1)
+        .single()
+      setAvailableQty(data?.available_qty ?? 0)
+      setStockLoading(false)
+    }
+    checkStock()
+  }, [product.id])
+
+  const cartQty = cartItems.find(i => i.id === product.id)?.quantity ?? 0
+  const isOutOfStock = !stockLoading && (availableQty === null || availableQty <= 0)
+  const isMaxInCart = !stockLoading && !isOutOfStock && availableQty !== null && cartQty >= availableQty
+  const isDisabled = stockLoading || isOutOfStock || isMaxInCart
 
   function handleAdd() {
+    if (isDisabled) return
     addItem({
       id: product.id,
       name: product.name,
@@ -39,6 +65,27 @@ export function AddToCartButton({ product }: Props) {
     setAdded(true)
     openCart()
     setTimeout(() => setAdded(false), 2000)
+  }
+
+  function getButtonLabel() {
+    if (stockLoading) return 'Checking stock…'
+    if (isOutOfStock) return 'Out of Stock'
+    if (isMaxInCart) return 'Max qty in cart'
+    if (added) return 'Added to Cart'
+    return 'Add to Cart'
+  }
+
+  function getButtonClass() {
+    if (stockLoading) {
+      return 'w-full py-4 text-xs tracking-arca uppercase transition-all bg-arca-cream text-arca-stone cursor-wait'
+    }
+    if (isOutOfStock || isMaxInCart) {
+      return 'w-full py-4 text-xs tracking-arca uppercase transition-all bg-arca-sand text-arca-stone cursor-not-allowed'
+    }
+    if (added) {
+      return 'w-full py-4 text-xs tracking-arca uppercase transition-all bg-arca-gold text-white'
+    }
+    return 'w-full py-4 text-xs tracking-arca uppercase transition-all bg-arca-ink text-arca-ivory hover:bg-arca-charcoal'
   }
 
   return (
@@ -76,13 +123,10 @@ export function AddToCartButton({ product }: Props) {
       {/* Add to cart */}
       <button
         onClick={handleAdd}
-        className={`w-full py-4 text-xs tracking-arca uppercase transition-all ${
-          added
-            ? 'bg-arca-gold text-white'
-            : 'bg-arca-ink text-arca-ivory hover:bg-arca-charcoal'
-        }`}
+        disabled={isDisabled}
+        className={getButtonClass()}
       >
-        {added ? 'Added to Cart' : 'Add to Cart'}
+        {getButtonLabel()}
       </button>
     </div>
   )

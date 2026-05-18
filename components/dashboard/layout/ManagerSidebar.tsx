@@ -53,8 +53,8 @@ export function ManagerSidebar({ role, userName, storeName }: Props) {
               href={item.href}
               className={`flex items-center px-3 py-2.5 text-sm transition-colors ${
                 active
-                  ? 'bg-arca-ink text-arca-ivory'
-                  : 'text-arca-charcoal hover:bg-arca-cream'
+                  ? 'bg-[#EFEFEC] text-arca-ink'
+                  : 'text-arca-stone hover:text-arca-ink hover:bg-arca-cream'
               }`}
             >
               {item.label}

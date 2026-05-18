@@ -30,8 +30,14 @@ export default async function InventoryPage() {
       </div>
 
       {!inventory || inventory.length === 0 ? (
-        <div className="border border-arca-sand py-16 text-center">
-          <p className="text-sm text-arca-stone">No inventory data for this store</p>
+        <div className="border border-arca-sand py-20 text-center">
+          <div className="w-10 h-10 border border-arca-sand mx-auto mb-4 flex items-center justify-center">
+            <svg className="w-5 h-5 text-arca-stone" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+            </svg>
+          </div>
+          <p className="text-sm text-arca-ink mb-1">No inventory tracked</p>
+          <p className="text-xs text-arca-stone">Add products to this store to see stock levels</p>
         </div>
       ) : (
         <div className="border border-arca-sand overflow-hidden">

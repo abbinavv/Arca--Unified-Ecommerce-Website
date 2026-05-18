@@ -1,11 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 
 type Category = { id: string; name: string }
+
+const SUPABASE_URL = 'https://kpgjktaxddcbsvbowxwx.supabase.co'
 
 export default function EditProductPage() {
   const router = useRouter()
@@ -17,10 +19,13 @@ export default function EditProductPage() {
     name: '', sku: '', description: '', price: '', cost: '',
     brand: '', category_id: '', image_url_1: '', image_url_2: '', image_url_3: '',
   })
+  const [previews, setPreviews] = useState<(string | null)[]>([null, null, null])
+  const [uploading, setUploading] = useState<boolean[]>([false, false, false])
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [notFound, setNotFound] = useState(false)
+  const fileRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)]
 
   useEffect(() => {
     const supabase = createClient()
@@ -43,6 +48,7 @@ export default function EditProductPage() {
         image_url_2: urls[1] ?? '',
         image_url_3: urls[2] ?? '',
       })
+      setPreviews([urls[0] ?? null, urls[1] ?? null, urls[2] ?? null])
       setLoading(false)
     })
     setLoading(true)
@@ -50,6 +56,25 @@ export default function EditProductPage() {
 
   function set(key: keyof typeof form, value: string) {
     setForm(prev => ({ ...prev, [key]: value }))
+  }
+
+  async function handleFileChange(index: number, file: File | null) {
+    if (!file) return
+    const urlKey = (['image_url_1', 'image_url_2', 'image_url_3'] as const)[index]
+    setUploading(prev => { const n = [...prev]; n[index] = true; return n })
+    const supabase = createClient()
+    const path = `products/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`
+    const { error: uploadError } = await supabase.storage
+      .from('product-images')
+      .upload(path, file, { upsert: true })
+    setUploading(prev => { const n = [...prev]; n[index] = false; return n })
+    if (uploadError) {
+      setError(`Upload failed: ${uploadError.message}`)
+      return
+    }
+    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`
+    set(urlKey, publicUrl)
+    setPreviews(prev => { const n = [...prev]; n[index] = publicUrl; return n })
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -156,11 +181,46 @@ export default function EditProductPage() {
         </div>
 
         <div>
-          <label className={labelClass}>Image URLs</label>
-          <div className="space-y-2">
-            {(['image_url_1', 'image_url_2', 'image_url_3'] as const).map((key, i) => (
-              <input key={key} value={form[key]} onChange={e => set(key, e.target.value)} className={inputClass} placeholder={`Image ${i + 1} URL`} />
-            ))}
+          <label className={labelClass}>Images (up to 3)</label>
+          <div className="space-y-3">
+            {([0, 1, 2] as const).map(i => {
+              const urlKey = (['image_url_1', 'image_url_2', 'image_url_3'] as const)[i]
+              return (
+                <div key={i} className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    {previews[i] && (
+                      <img src={previews[i]!} alt={`Preview ${i + 1}`} className="w-10 h-10 object-cover border border-[#E8E8E4] flex-shrink-0" />
+                    )}
+                    <div className="flex-1">
+                      <input
+                        ref={fileRefs[i]}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={e => handleFileChange(i, e.target.files?.[0] ?? null)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => fileRefs[i].current?.click()}
+                        disabled={uploading[i]}
+                        className="w-full h-10 px-3 border border-dashed border-[#E8E8E4] text-arca-stone text-xs tracking-wide hover:border-arca-ink hover:text-arca-ink transition-colors disabled:opacity-50"
+                      >
+                        {uploading[i] ? 'Uploading…' : `Choose image ${i + 1}`}
+                      </button>
+                    </div>
+                  </div>
+                  <input
+                    value={form[urlKey]}
+                    onChange={e => {
+                      set(urlKey, e.target.value)
+                      if (e.target.value) setPreviews(prev => { const n = [...prev]; n[i] = e.target.value; return n })
+                    }}
+                    className={inputClass}
+                    placeholder={`Or paste image ${i + 1} URL`}
+                  />
+                </div>
+              )
+            })}
           </div>
         </div>
 

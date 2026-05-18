@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Arca - Unified Ecommerce Website
+
+Arca is a role-based unified ecommerce platform built with Next.js App Router, Supabase, and Stripe.  
+It combines a luxury storefront with internal dashboards for admin, manager, and staff workflows.
+
+## Project Status
+
+The project is actively in development with core flows implemented across:
+
+- Storefront browsing, product detail, category filtering, and cart
+- Account area (profile, orders, appointments, service, wishlist)
+- Role-specific dashboards (`admin`, `manager`, `staff`)
+- Catalog management and internal operations screens
+- Checkout API route with Stripe integration hooks
+- Auth flows: signup, login, verify, reset password, update password, signout
+
+## Tech Stack
+
+- `Next.js 16` (App Router)
+- `React 19`
+- `TypeScript`
+- `Supabase` (`@supabase/ssr`, `@supabase/supabase-js`)
+- `Stripe`
+- `Tailwind CSS 4`
+- `Radix UI`, `Zod`, `React Hook Form`, `Zustand`, `Framer Motion`
 
 ## Getting Started
 
-First, run the development server:
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Create your env file:
+
+```bash
+cp .env.local.example .env.local
+```
+
+If `.env.local.example` does not exist in your clone, create `.env.local` manually.
+
+3. Add required environment variables (see below).
+
+4. Run development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Required Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The codebase currently expects these values:
 
-## Learn More
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+STRIPE_SECRET_KEY=
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `npm run dev` - Start local dev server
+- `npm run build` - Production build
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## App Structure
 
-## Deploy on Vercel
+- `app/(storefront)` - Public shopping experience and customer account pages
+- `app/auth` - Authentication pages and signout route
+- `app/dashboard/admin` - Admin operations (catalog, reports, pricing, inventory, users, stores, audit)
+- `app/dashboard/manager` - Manager workflows (inventory, transfers, orders, events, analytics, discrepancies)
+- `app/dashboard/staff` - Staff workflows (sell, clients, appointments, catalog, looks, service)
+- `app/api/checkout/route.ts` - Checkout API endpoint
+- `components/` - Shared UI and domain-specific components
+- `lib/` - Integrations and utility modules (`supabase`, `stripe`, helpers)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Notes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- This repository contains ongoing feature work. You may see local uncommitted changes depending on branch/worktree state.
+- Stripe is optional at runtime if `STRIPE_SECRET_KEY` is not provided (the Stripe server client is initialized conditionally).
+
+## Deployment
+
+Deploy on Vercel (recommended) or any Node runtime that supports Next.js 16.
+
+Before deploying, ensure:
+
+- All required environment variables are configured in the target environment
+- `npm run build` passes locally

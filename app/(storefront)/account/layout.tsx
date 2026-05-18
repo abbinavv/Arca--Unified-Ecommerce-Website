@@ -1,6 +1,6 @@
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { AccountNavLink } from '@/components/storefront/account/AccountNavLink'
 
 const NAV = [
   { href: '/account', label: 'Overview' },
@@ -55,20 +55,6 @@ export default async function AccountLayout({
         <main>{children}</main>
       </div>
     </div>
-  )
-}
-
-// ── Client components needed inline ──────────────────────────────────────────
-
-function AccountNavLink({ href, label }: { href: string; label: string }) {
-  // Static links — active state handled client-side via pathname
-  return (
-    <Link
-      href={href}
-      className="block py-2 text-sm text-arca-charcoal hover:text-arca-ink transition-colors"
-    >
-      {label}
-    </Link>
   )
 }
 

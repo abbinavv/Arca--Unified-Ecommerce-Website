@@ -39,8 +39,8 @@ export function AdminSidebar({ userName }: Props) {
               href={item.href}
               className={`flex items-center px-3 py-2.5 text-sm transition-colors ${
                 active
-                  ? 'bg-arca-charcoal text-arca-ivory'
-                  : 'text-arca-sand hover:bg-arca-charcoal hover:text-arca-ivory'
+                  ? 'bg-[#EFEFEC] text-arca-ink'
+                  : 'text-arca-stone hover:text-arca-ink hover:bg-[#EFEFEC]'
               }`}
             >
               {item.label}

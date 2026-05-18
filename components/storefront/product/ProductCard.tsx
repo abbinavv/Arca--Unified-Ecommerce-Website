@@ -1,5 +1,8 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 
 export type ProductCardData = {
   id: string
@@ -13,6 +16,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   const image = product.image_urls?.[0] ?? null
 
   return (
+    <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
     <Link href={`/products/${product.id}`} className="group block">
       {/* Image */}
       <div className="relative aspect-[3/4] bg-arca-cream mb-3 overflow-hidden">
@@ -46,5 +50,6 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         </p>
       </div>
     </Link>
+    </motion.div>
   )
 }
