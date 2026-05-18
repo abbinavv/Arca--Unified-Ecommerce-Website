@@ -39,11 +39,11 @@ export default function TicketActions({ ticket }: Props) {
   const total =
     (parseFloat(labourCost) || 0) + (parseFloat(partsCost) || 0)
 
-  async function updateTicket(updates: Record<string, unknown>) {
+  async function updateTicket(updates: Record<string, string | number | null | boolean>) {
     setSaving(true)
     setError(null)
     const supabase = createClient()
-    const { error: err } = await supabase
+    const { error: err } = await (supabase as any)
       .from('service_tickets')
       .update(updates)
       .eq('id', ticket.id)
@@ -162,10 +162,6 @@ export default function TicketActions({ ticket }: Props) {
             onClick={() =>
               updateTicket({
                 estimated_cost: total,
-                estimate_breakdown: {
-                  labour: parseFloat(labourCost) || 0,
-                  parts: parseFloat(partsCost) || 0,
-                },
                 status: 'estimate_sent',
                 estimate_sent_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),

@@ -7,7 +7,7 @@ type Store = {
   id: string
   name: string
   address: string | null
-  city: string
+  city: string | null
   region: string | null
   country: string
   type: string | null
@@ -58,7 +58,7 @@ export default function StoresPage() {
     setForm({
       name: store.name,
       address: store.address ?? '',
-      city: store.city,
+      city: store.city ?? '',
       region: store.region ?? '',
       country: store.country,
       type: store.type ?? 'boutique',
@@ -93,7 +93,7 @@ export default function StoresPage() {
       city: form.city,
       region: form.region || null,
       country: form.country,
-      type: form.type || null,
+      type: form.type || undefined,
       is_active: form.is_active,
     }
     let err
@@ -133,7 +133,7 @@ export default function StoresPage() {
         {stores.map(store => (
           <div key={store.id} className="grid grid-cols-[1fr_120px_120px_80px_80px] gap-4 px-6 py-4 items-center hover:bg-[#F9F9F7] transition-colors">
             <p className="text-sm text-arca-ink">{store.name}</p>
-            <p className="text-xs text-arca-stone">{store.city}</p>
+            <p className="text-xs text-arca-stone">{store.city ?? '—'}</p>
             <p className="text-xs text-arca-stone capitalize">{store.type}</p>
             <span className={`text-[10px] tracking-wide px-2 py-1 ${store.is_active ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
               {store.is_active ? 'Active' : 'Inactive'}

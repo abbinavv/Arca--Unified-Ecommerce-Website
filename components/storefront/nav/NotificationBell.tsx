@@ -24,7 +24,7 @@ export function NotificationBell({ userId }: { userId: string }) {
       const { data, error } = await supabase
         .from('notifications')
         .select('id, message, is_read, created_at')
-        .eq('user_id', userId)
+        .eq('recipient_client_id', userId)
         .order('created_at', { ascending: false })
         .limit(5)
 
@@ -49,7 +49,7 @@ export function NotificationBell({ userId }: { userId: string }) {
           event: 'INSERT',
           schema: 'public',
           table: 'notifications',
-          filter: `user_id=eq.${userId}`,
+          filter: `recipient_client_id=eq.${userId}`,
         },
         (payload) => {
           const newNotif = payload.new as Notification

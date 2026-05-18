@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useCartStore } from '@/stores/cartStore'
 import { useAuth } from '@/hooks/useAuth'
+import { NotificationBell } from './NotificationBell'
 
 const NAV_LINKS = [
   { href: '/shop', label: 'Shop' },
@@ -106,6 +107,9 @@ export function ArcaNav() {
               Sign in
             </Link>
           )}
+
+          {/* Notifications — customers only */}
+          {user && !dashboardHref && <NotificationBell userId={user.id} />}
 
           {/* Cart icon */}
           <button

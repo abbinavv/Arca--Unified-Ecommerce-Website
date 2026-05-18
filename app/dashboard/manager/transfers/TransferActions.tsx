@@ -5,11 +5,10 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
 const STATUS_STYLE: Record<string, string> = {
-  pending: 'text-amber-700 bg-amber-50',
-  approved: 'text-blue-700 bg-blue-50',
-  dispatched: 'text-indigo-700 bg-indigo-50',
-  completed: 'text-green-700 bg-green-50',
-  cancelled: 'text-red-700 bg-red-50',
+  PENDING: 'text-amber-700 bg-amber-50',
+  IN_TRANSIT: 'text-blue-700 bg-blue-50',
+  COMPLETED: 'text-green-700 bg-green-50',
+  CANCELLED: 'text-red-700 bg-red-50',
 }
 
 type Transfer = {
@@ -48,7 +47,9 @@ export function TransferActions({
   const [quantity, setQuantity] = useState('')
   const [searchLoading, setSearchLoading] = useState(false)
 
-  async function updateStatus(id: string, newStatus: string) {
+  type AllocationStatus = 'PENDING' | 'IN_TRANSIT' | 'COMPLETED' | 'CANCELLED'
+
+  async function updateStatus(id: string, newStatus: AllocationStatus) {
     setLoadingId(id)
     const supabase = createClient()
     const { error } = await supabase
@@ -110,7 +111,7 @@ export function TransferActions({
       to_location_id: toStore,
       product_id: productId,
       quantity: qty,
-      status: 'pending',
+      status: 'PENDING' as const,
     })
     if (error) {
       setFormError(error.message)
@@ -272,17 +273,17 @@ export function TransferActions({
                 {t.status}
               </span>
               <div className="flex items-center gap-2">
-                {t.status === 'pending' && (
+                {t.status === 'PENDING' && (
                   <>
                     <button
-                      onClick={() => updateStatus(t.id, 'approved')}
+                      onClick={() => updateStatus(t.id, 'IN_TRANSIT')}
                       disabled={loadingId === t.id}
                       className="px-3 h-8 bg-arca-ink text-arca-ivory text-[10px] tracking-arca uppercase hover:bg-arca-charcoal disabled:opacity-50 transition-colors"
                     >
-                      Approve
+                      Dispatch
                     </button>
                     <button
-                      onClick={() => updateStatus(t.id, 'cancelled')}
+                      onClick={() => updateStatus(t.id, 'CANCELLED')}
                       disabled={loadingId === t.id}
                       className="px-3 h-8 border border-arca-sand text-arca-stone text-[10px] tracking-arca uppercase hover:border-arca-ink hover:text-arca-ink disabled:opacity-50 transition-colors"
                     >
@@ -290,18 +291,9 @@ export function TransferActions({
                     </button>
                   </>
                 )}
-                {t.status === 'approved' && (
+                {t.status === 'IN_TRANSIT' && (
                   <button
-                    onClick={() => updateStatus(t.id, 'dispatched')}
-                    disabled={loadingId === t.id}
-                    className="px-3 h-8 bg-arca-ink text-arca-ivory text-[10px] tracking-arca uppercase hover:bg-arca-charcoal disabled:opacity-50 transition-colors"
-                  >
-                    Mark Dispatched
-                  </button>
-                )}
-                {t.status === 'dispatched' && (
-                  <button
-                    onClick={() => updateStatus(t.id, 'completed')}
+                    onClick={() => updateStatus(t.id, 'COMPLETED')}
                     disabled={loadingId === t.id}
                     className="px-3 h-8 bg-arca-ink text-arca-ivory text-[10px] tracking-arca uppercase hover:bg-arca-charcoal disabled:opacity-50 transition-colors"
                   >
