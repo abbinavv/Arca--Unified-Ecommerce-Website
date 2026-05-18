@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/server'
 import { AddToCartButton } from '@/components/storefront/product/AddToCartButton'
 import { ProductCard } from '@/components/storefront/product/ProductCard'
 import { ProductGallery } from '@/components/storefront/product/ProductGallery'
-import { FulfillmentSelector } from '@/components/storefront/product/FulfillmentSelector'
 import type { Metadata } from 'next'
 
 type Params = Promise<{ id: string }>
@@ -91,12 +90,6 @@ export default async function ProductPage({ params }: { params: Params }) {
             ₹{product.price.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
             <span className="text-xs font-sans text-arca-stone ml-2">incl. taxes</span>
           </p>
-
-          {/* Fulfillment */}
-          <div className="mb-8">
-            <p className="text-[10px] tracking-arca uppercase text-arca-stone mb-3">Fulfillment</p>
-            <FulfillmentSelector />
-          </div>
 
           {/* Add to cart */}
           <AddToCartButton
