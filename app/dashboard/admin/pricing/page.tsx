@@ -6,13 +6,14 @@ export const metadata: Metadata = { title: 'Pricing — Arca Admin' }
 export default async function PricingPage() {
   const supabase = await createClient()
 
+  const db = supabase as any
   const [{ data: promotions }, { data: taxRates }] = await Promise.all([
-    supabase
+    db
       .from('promotion_rules')
       .select('id, code, description, discount_type, discount_value, min_order_amount, max_uses, uses_count, valid_from, valid_until, is_active')
       .order('created_at', { ascending: false })
       .limit(50),
-    supabase
+    db
       .from('tax_rates')
       .select('id, name, rate, region, category, is_active')
       .order('name'),

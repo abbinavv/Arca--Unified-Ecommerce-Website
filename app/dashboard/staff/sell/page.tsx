@@ -88,10 +88,9 @@ export default function SellPage() {
         channel: 'in_store',
         fulfillment_type: fulfillment,
         subtotal,
-        tax_amount: gst,
+        tax_total: gst,
+        discount_total: discountAmt,
         grand_total: total,
-        payment_status: paymentMethod === 'pay_in_store' ? 'paid' : 'pending',
-        payment_method: paymentMethod,
         associate_id: user!.id,
       })
       .select('id, order_number')

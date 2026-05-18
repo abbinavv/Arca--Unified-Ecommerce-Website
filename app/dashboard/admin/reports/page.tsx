@@ -42,7 +42,7 @@ export default function ReportsPage() {
     const supabase = createClient()
     let query = supabase
       .from('orders')
-      .select('order_number, status, channel, fulfillment_type, subtotal, tax_amount, grand_total, payment_status, payment_method, created_at')
+      .select('order_number, status, channel, fulfillment_type, subtotal, tax_total, grand_total, created_at')
       .order('created_at', { ascending: false })
     if (dateFrom) query = query.gte('created_at', dateFrom)
     if (dateTo) query = query.lte('created_at', dateTo + 'T23:59:59')
@@ -76,7 +76,7 @@ export default function ReportsPage() {
     const supabase = createClient()
     const { data } = await supabase
       .from('clients')
-      .select('first_name, last_name, email, phone, city, state, segment, created_at')
+      .select('first_name, last_name, email, phone, city, state, created_at')
       .order('created_at', { ascending: false })
     download(toCSV(data ?? []), `arca-customers-${Date.now()}.csv`)
     setLoading(null)

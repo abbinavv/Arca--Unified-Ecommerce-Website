@@ -60,11 +60,9 @@ export function CheckoutFlow() {
         channel: 'online',
         fulfillment_type: 'standard',
         subtotal,
-        tax_amount: gst,
+        tax_total: gst,
         grand_total: grand,
-        shipping_address: address,
-        payment_status: 'pending',
-        payment_method: 'cod',
+        notes: `Ship to: ${address.fullName}, ${address.line1}, ${address.city}, ${address.state} ${address.postalCode}`,
       })
       .select('id, order_number')
       .single()
