@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { AddToCartButton } from '@/components/storefront/product/AddToCartButton'
 import { ProductCard } from '@/components/storefront/product/ProductCard'
+import { ProductGallery } from '@/components/storefront/product/ProductGallery'
+import { FulfillmentSelector } from '@/components/storefront/product/FulfillmentSelector'
 import type { Metadata } from 'next'
 
 type Params = Promise<{ id: string }>
@@ -52,7 +53,6 @@ export default async function ProductPage({ params }: { params: Params }) {
 
   const related = await getRelated(product.category_id, product.id)
   const images: string[] = product.image_urls ?? []
-  const primaryImage = images[0] ?? null
 
   return (
     <div className="max-w-screen-xl mx-auto px-6 py-16">
@@ -65,44 +65,7 @@ export default async function ProductPage({ params }: { params: Params }) {
 
       <div className="grid md:grid-cols-2 gap-12 lg:gap-20">
         {/* Gallery */}
-        <div className="space-y-3">
-          {/* Primary image */}
-          <div className="relative aspect-[3/4] bg-arca-cream overflow-hidden">
-            {primaryImage ? (
-              <Image
-                src={primaryImage}
-                alt={product.name}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-                priority
-              />
-            ) : (
-              <div className="absolute inset-0 bg-arca-bone flex items-center justify-center">
-                <span className="font-display text-3xl font-light tracking-[0.3em] uppercase text-arca-stone/30">
-                  Arca
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Thumbnails */}
-          {images.length > 1 && (
-            <div className="grid grid-cols-4 gap-2">
-              {images.slice(1, 5).map((url, i) => (
-                <div key={i} className="relative aspect-square bg-arca-cream overflow-hidden">
-                  <Image
-                    src={url}
-                    alt={`${product.name} ${i + 2}`}
-                    fill
-                    sizes="25vw"
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <ProductGallery images={images} productName={product.name} />
 
         {/* Details */}
         <div className="flex flex-col">
@@ -128,6 +91,12 @@ export default async function ProductPage({ params }: { params: Params }) {
             ₹{product.price.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
             <span className="text-xs font-sans text-arca-stone ml-2">incl. taxes</span>
           </p>
+
+          {/* Fulfillment */}
+          <div className="mb-8">
+            <p className="text-[10px] tracking-arca uppercase text-arca-stone mb-3">Fulfillment</p>
+            <FulfillmentSelector />
+          </div>
 
           {/* Add to cart */}
           <AddToCartButton
