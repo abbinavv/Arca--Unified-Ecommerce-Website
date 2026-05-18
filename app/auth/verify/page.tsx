@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { Suspense, useState, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-export default function VerifyPage() {
+function VerifyForm() {
   const router = useRouter()
   const params = useSearchParams()
   const email = params.get('email') ?? ''
@@ -114,5 +114,13 @@ export default function VerifyPage() {
         </button>
       </p>
     </div>
+  )
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense>
+      <VerifyForm />
+    </Suspense>
   )
 }

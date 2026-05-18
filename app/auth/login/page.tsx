@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -16,7 +16,7 @@ function getRoleRedirect(role: UserRole | 'customer' | null, next: string | null
   return '/'
 }
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const params = useSearchParams()
   const next = params.get('next')
@@ -40,7 +40,6 @@ export default function LoginPage() {
       return
     }
 
-    // Resolve role
     const { data: staffUser } = await supabase
       .from('users')
       .select('role')
@@ -121,5 +120,13 @@ export default function LoginPage() {
         </Link>
       </p>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }
