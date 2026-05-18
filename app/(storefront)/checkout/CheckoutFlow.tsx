@@ -46,47 +46,73 @@ export function CheckoutFlow() {
     setLoading(true)
     setError('')
 
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
 
-    const num = `ORD-${Date.now().toString().slice(-8)}`
+      // Route order to nearest store by city
+      const cityNorm = address.city.trim().toLowerCase()
+      const CITY_STORE: Record<string, string> = {
+        'mumbai':    '11111111-0000-0000-0000-000000000001',
+        'new delhi': '11111111-0000-0000-0000-000000000002',
+        'delhi':     '11111111-0000-0000-0000-000000000002',
+        'bengaluru': '11111111-0000-0000-0000-000000000003',
+        'bangalore': '11111111-0000-0000-0000-000000000003',
+      }
+      const storeId = CITY_STORE[cityNorm] ?? '11111111-0000-0000-0000-000000000001'
 
-    const { data: order, error: orderErr } = await supabase
-      .from('orders')
-      .insert({
-        client_id: user?.id ?? null,
-        order_number: num,
-        status: 'pending',
-        channel: 'online',
-        fulfillment_type: 'standard',
-        subtotal,
-        tax_total: gst,
-        grand_total: grand,
-        notes: `Ship to: ${address.fullName}, ${address.line1}, ${address.city}, ${address.state} ${address.postalCode}`,
-      })
-      .select('id, order_number')
-      .single()
+      const num = `ORD-${Date.now().toString().slice(-8)}`
 
-    if (orderErr || !order) {
-      setError(orderErr?.message ?? 'Failed to place order')
+      const { data: order, error: orderErr } = await supabase
+        .from('orders')
+        .insert({
+          client_id: user?.id ?? null,
+          store_id: storeId,
+          order_number: num,
+          status: 'pending',
+          channel: 'online',
+          fulfillment_type: 'standard',
+          subtotal,
+          tax_total: gst,
+          grand_total: grand,
+          notes: `Ship to: ${address.fullName}, ${address.line1}, ${address.city}, ${address.state} ${address.postalCode}`,
+        })
+        .select('id, order_number')
+        .single()
+
+      if (orderErr || !order) {
+        setError(orderErr?.message ?? 'Failed to place order')
+        setLoading(false)
+        return
+      }
+
+      // Insert order items
+      const orderItems = items.map(i => ({
+        order_id: order.id,
+        product_id: i.id,
+        quantity: i.quantity,
+        unit_price: i.price,
+        line_total: i.price * i.quantity,
+      }))
+      await supabase.from('order_items').insert(orderItems)
+
+      // Deduct inventory for each item at the routed store
+      const db = supabase as any
+      for (const item of items) {
+        await db.rpc('decrement_inventory', {
+          p_product_id: item.id,
+          p_location_id: storeId,
+          p_qty: item.quantity,
+        })
+      }
+
+      clearCart()
+      setOrderNumber(order.order_number)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
+    } finally {
       setLoading(false)
-      return
     }
-
-    // Insert order items
-    const orderItems = items.map(i => ({
-      order_id: order.id,
-      product_id: i.id,
-      quantity: i.quantity,
-      unit_price: i.price,
-      line_total: i.price * i.quantity,
-    }))
-
-    await supabase.from('order_items').insert(orderItems)
-
-    clearCart()
-    setOrderNumber(order.order_number)
-    setLoading(false)
   }
 
   if (orderNumber) {
