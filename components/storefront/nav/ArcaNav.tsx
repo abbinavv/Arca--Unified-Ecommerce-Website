@@ -10,7 +10,9 @@ const NAV_LINKS = [
   { href: '/shop', label: 'Shop' },
   { href: '/shop/women', label: 'Women' },
   { href: '/shop/men', label: 'Men' },
-  { href: '/shop/lifestyle', label: 'Lifestyle' },
+  { href: '/shop/watches', label: 'Watches' },
+  { href: '/shop/jewellery', label: 'Jewellery' },
+  { href: '/shop/accessories', label: 'Accessories' },
 ]
 
 export function ArcaNav() {
