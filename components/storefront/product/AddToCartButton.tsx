@@ -1,0 +1,89 @@
+'use client'
+
+import { useState } from 'react'
+import { useCartStore } from '@/stores/cartStore'
+
+type Props = {
+  product: {
+    id: string
+    name: string
+    brand: string | null
+    price: number
+    image_urls: string[] | null
+  }
+}
+
+const FULFILLMENT_OPTIONS = [
+  { value: 'standard', label: 'Standard Delivery', sub: '3–5 business days' },
+  { value: 'bopis', label: 'Pick Up In-Store', sub: 'Ready in 2 hours' },
+  { value: 'ship_from_store', label: 'Ship from Store', sub: '1–2 business days' },
+] as const
+
+type FulfillmentType = 'standard' | 'bopis' | 'ship_from_store'
+
+export function AddToCartButton({ product }: Props) {
+  const addItem = useCartStore(s => s.addItem)
+  const openCart = useCartStore(s => s.openCart)
+  const [fulfillment, setFulfillment] = useState<FulfillmentType>('standard')
+  const [added, setAdded] = useState(false)
+
+  function handleAdd() {
+    addItem({
+      id: product.id,
+      name: product.name,
+      brand: product.brand,
+      price: product.price,
+      image: product.image_urls?.[0] ?? null,
+      fulfillmentType: fulfillment,
+    })
+    setAdded(true)
+    openCart()
+    setTimeout(() => setAdded(false), 2000)
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Fulfillment selector */}
+      <div>
+        <p className="text-[10px] tracking-arca uppercase text-arca-stone mb-3">Fulfillment</p>
+        <div className="space-y-2">
+          {FULFILLMENT_OPTIONS.map(opt => (
+            <label
+              key={opt.value}
+              className={`flex items-start gap-3 p-3 border cursor-pointer transition-colors ${
+                fulfillment === opt.value
+                  ? 'border-arca-ink bg-arca-cream'
+                  : 'border-arca-sand hover:border-arca-charcoal'
+              }`}
+            >
+              <input
+                type="radio"
+                name="fulfillment"
+                value={opt.value}
+                checked={fulfillment === opt.value}
+                onChange={() => setFulfillment(opt.value)}
+                className="mt-0.5 accent-arca-ink"
+              />
+              <div>
+                <p className="text-xs text-arca-ink leading-snug">{opt.label}</p>
+                <p className="text-[11px] text-arca-stone">{opt.sub}</p>
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Add to cart */}
+      <button
+        onClick={handleAdd}
+        className={`w-full py-4 text-xs tracking-arca uppercase transition-all ${
+          added
+            ? 'bg-arca-gold text-white'
+            : 'bg-arca-ink text-arca-ivory hover:bg-arca-charcoal'
+        }`}
+      >
+        {added ? 'Added to Cart' : 'Add to Cart'}
+      </button>
+    </div>
+  )
+}

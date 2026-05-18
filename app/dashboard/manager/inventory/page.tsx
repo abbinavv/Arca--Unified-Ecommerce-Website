@@ -1,0 +1,76 @@
+import { createClient } from '@/lib/supabase/server'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = { title: 'Inventory — Arca Manager' }
+
+export default async function InventoryPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const { data: staffUser } = await supabase
+    .from('users').select('store_id').eq('id', user!.id).single()
+
+  const { data: inventory } = staffUser?.store_id
+    ? await supabase
+        .from('inventory')
+        .select('id, quantity, reserved_quantity, available_qty, products(id, name, brand, sku)')
+        .eq('location_id', staffUser.store_id)
+        .order('available_qty', { ascending: true })
+    : { data: [] }
+
+  return (
+    <div className="p-8">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="font-display text-3xl font-light text-arca-ink">Inventory</h1>
+        <div className="flex gap-3">
+          <span className="text-xs text-arca-stone self-center">
+            {inventory?.length ?? 0} items
+          </span>
+        </div>
+      </div>
+
+      {!inventory || inventory.length === 0 ? (
+        <div className="border border-arca-sand py-16 text-center">
+          <p className="text-sm text-arca-stone">No inventory data for this store</p>
+        </div>
+      ) : (
+        <div className="border border-arca-sand overflow-hidden">
+          {/* Header */}
+          <div className="grid grid-cols-[1fr_80px_80px_80px] gap-4 px-6 py-3 border-b border-arca-sand bg-arca-cream text-[10px] tracking-arca uppercase text-arca-stone">
+            <span>Product</span>
+            <span className="text-right">On hand</span>
+            <span className="text-right">Reserved</span>
+            <span className="text-right">Available</span>
+          </div>
+          <div className="divide-y divide-arca-sand">
+            {inventory.map((row: any) => {
+              const low = (row.available_qty ?? 0) <= 2
+              return (
+                <div
+                  key={row.id}
+                  className={`grid grid-cols-[1fr_80px_80px_80px] gap-4 px-6 py-4 items-center ${low ? 'bg-amber-50' : ''}`}
+                >
+                  <div>
+                    {row.products?.brand && (
+                      <p className="text-[10px] tracking-arca uppercase text-arca-stone">{row.products.brand}</p>
+                    )}
+                    <p className="text-sm text-arca-ink">{row.products?.name ?? '—'}</p>
+                    {row.products?.sku && (
+                      <p className="text-xs font-mono text-arca-stone/60">{row.products.sku}</p>
+                    )}
+                  </div>
+                  <p className="text-sm font-mono text-arca-ink text-right">{row.quantity}</p>
+                  <p className="text-sm font-mono text-arca-stone text-right">{row.reserved_quantity}</p>
+                  <p className={`text-sm font-mono text-right font-medium ${low ? 'text-amber-700' : 'text-arca-ink'}`}>
+                    {row.available_qty}
+                    {low && <span className="ml-1 text-[9px]">↓</span>}
+                  </p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

@@ -1,26 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:wght@400;600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Arca Color System */
+  --arca-ivory:    #FAFAF7;
+  --arca-cream:    #F4F0E8;
+  --arca-bone:     #EDE8DC;
+  --arca-sand:     #D4C9B5;
+  --arca-ink:      #0A0A08;
+  --arca-charcoal: #2C2C28;
+  --arca-stone:    #6B6560;
+  --arca-dust:     #9C9590;
+  --arca-gold:     #B8952A;
+  --arca-gold-lt:  #D4AF60;
+  --arca-gold-dk:  #8A6E1A;
+  --arca-white:    #FFFFFF;
+  --arca-error:    #C0392B;
+  --arca-success:  #2E7D52;
+
+  /* Semantic tokens */
+  --background: var(--arca-ivory);
+  --foreground: var(--arca-ink);
+  --muted: var(--arca-cream);
+  --muted-foreground: var(--arca-stone);
+  --border: var(--arca-sand);
+  --input: var(--arca-sand);
+  --ring: var(--arca-gold);
+  --accent: var(--arca-gold);
+  --accent-foreground: var(--arca-white);
+  --card: var(--arca-white);
+  --card-foreground: var(--arca-ink);
+  --popover: var(--arca-white);
+  --popover-foreground: var(--arca-ink);
+  --primary: var(--arca-ink);
+  --primary-foreground: var(--arca-white);
+  --secondary: var(--arca-cream);
+  --secondary-foreground: var(--arca-charcoal);
+  --destructive: var(--arca-error);
+  --destructive-foreground: var(--arca-white);
+  --radius: 2px;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-accent: var(--accent);
+  --color-card: var(--card);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive: var(--destructive);
+
+  /* Arca palette */
+  --color-arca-ivory:    var(--arca-ivory);
+  --color-arca-cream:    var(--arca-cream);
+  --color-arca-bone:     var(--arca-bone);
+  --color-arca-sand:     var(--arca-sand);
+  --color-arca-ink:      var(--arca-ink);
+  --color-arca-charcoal: var(--arca-charcoal);
+  --color-arca-stone:    var(--arca-stone);
+  --color-arca-dust:     var(--arca-dust);
+  --color-arca-gold:     var(--arca-gold);
+  --color-arca-gold-lt:  var(--arca-gold-lt);
+  --color-arca-gold-dk:  var(--arca-gold-dk);
+
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', monospace;
+
+  --radius-sm: 1px;
+  --radius-md: 2px;
+  --radius-lg: 4px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--arca-sand);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* Typography utilities */
+.font-display  { font-family: var(--font-display); }
+.font-heading  { font-family: var(--font-heading); }
+
+/* Refined scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--arca-ivory); }
+::-webkit-scrollbar-thumb { background: var(--arca-sand); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--arca-dust); }
+
+/* Selection */
+::selection { background: var(--arca-gold-lt); color: var(--arca-ink); }
+
+/* Fine dividers */
+.arca-divider { border-top: 0.5px solid var(--arca-sand); }
+
+/* Letter-spacing utilities */
+.tracking-arca { letter-spacing: 0.15em; }
+.tracking-arca-sm { letter-spacing: 0.08em; }
