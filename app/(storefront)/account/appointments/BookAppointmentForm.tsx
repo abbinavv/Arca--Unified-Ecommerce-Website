@@ -12,7 +12,7 @@ const SERVICE_TYPES = [
   { value: 'jewellery_consultation', label: 'Jewellery Consultation' },
 ]
 
-type Store = { id: string; name: string; city: string }
+type Store = { id: string; name: string; city: string | null }
 
 export function BookAppointmentForm({ stores }: { stores: Store[] }) {
   const router = useRouter()
