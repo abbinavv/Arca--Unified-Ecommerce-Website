@@ -74,10 +74,13 @@ export async function proxy(request: NextRequest) {
   }
 
   // ── Dashboard access control ─────────────────────────────────────────────────
-  if (path.startsWith('/dashboard/admin') && role !== 'corporate_admin') {
+  // Only redirect if the cookie is SET to the wrong role.
+  // If cookie is absent the layout's own createAdminClient check handles it.
+  if (role && path.startsWith('/dashboard/admin') && role !== 'corporate_admin') {
     return NextResponse.redirect(new URL('/', request.url))
   }
   if (
+    role &&
     path.startsWith('/dashboard/manager') &&
     role !== 'boutique_manager' &&
     role !== 'inventory_controller'
@@ -85,6 +88,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url))
   }
   if (
+    role &&
     path.startsWith('/dashboard/staff') &&
     role !== 'sales_associate' &&
     role !== 'service_technician' &&
