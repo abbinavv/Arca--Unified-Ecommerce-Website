@@ -1,5 +1,4 @@
 import { createServerClient } from '@supabase/ssr'
-import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
 
 const STAFF_ROLES = [
@@ -57,11 +56,13 @@ export async function proxy(request: NextRequest) {
   }
 
   // ── Fetch role via service-role key (bypasses RLS — always reliable) ─────────
-  const admin = createServiceClient(
+  // Use @supabase/ssr (Edge-compatible) — NOT @supabase/supabase-js which uses Node APIs
+  const adminClient = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { cookies: { getAll: () => [], setAll: () => {} } }
   )
-  const { data: staffUser } = await admin
+  const { data: staffUser } = await adminClient
     .from('users')
     .select('role')
     .eq('id', user.id)

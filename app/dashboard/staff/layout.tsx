@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { DashboardSidebar } from '@/components/dashboard/layout/DashboardSidebar'
 import type { UserRole } from '@/types/database'
 
@@ -14,7 +14,9 @@ export default async function StaffPortalLayout({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login?next=/dashboard/staff')
 
-  const { data: staffUser } = await supabase
+  // Use service-role client to bypass RLS — guaranteed to find the row
+  const admin = await createAdminClient()
+  const { data: staffUser } = await admin
     .from('users')
     .select('first_name, last_name, role, store_id')
     .eq('id', user.id)
@@ -25,7 +27,7 @@ export default async function StaffPortalLayout({
   }
 
   const { data: store } = staffUser.store_id
-    ? await supabase.from('stores').select('name').eq('id', staffUser.store_id).single()
+    ? await admin.from('stores').select('name').eq('id', staffUser.store_id).single()
     : { data: null }
 
   const userName = [staffUser.first_name, staffUser.last_name].filter(Boolean).join(' ') || user.email!

@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { AdminSidebar } from '@/components/dashboard/layout/AdminSidebar'
 
 export default async function AdminPanelLayout({
@@ -11,7 +11,9 @@ export default async function AdminPanelLayout({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login?next=/dashboard/admin')
 
-  const { data: staffUser } = await supabase
+  // Use service-role client to bypass RLS — guaranteed to find the row
+  const admin = await createAdminClient()
+  const { data: staffUser } = await admin
     .from('users')
     .select('first_name, last_name, role')
     .eq('id', user.id)
