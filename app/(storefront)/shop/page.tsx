@@ -9,6 +9,8 @@ type SearchParams = Promise<{
   max?: string
 }>
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: 'Shop — Arca',
 }

@@ -7,6 +7,8 @@ import type { Metadata } from 'next'
 type Params = Promise<{ category: string }>
 type SearchParams = Promise<{ sort?: string; min?: string; max?: string }>
 
+export const dynamic = 'force-dynamic'
+
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { category } = await params
   const label = category.charAt(0).toUpperCase() + category.slice(1)
@@ -29,11 +31,11 @@ async function getProductsByCategory(
 ) {
   const supabase = await createClient()
 
-  // Match category name case-insensitively
+  const normalizedName = categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)
   const { data: cat } = await supabase
     .from('categories')
     .select('id')
-    .ilike('name', categorySlug)
+    .eq('name', normalizedName)
     .single()
 
   if (!cat) return []

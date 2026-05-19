@@ -19,7 +19,7 @@ function getDashboardForRole(role: string): string {
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
-  // Session-refreshing client (anon key, reads/writes cookies)
+  // Refresh the session cookie (required by @supabase/ssr)
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -40,7 +40,7 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   const path = request.nextUrl.pathname
 
-  // ── Unauthenticated ──────────────────────────────────────────────────────────
+  // ── Unauthenticated: protect private routes ──────────────────────────────────
   if (!user) {
     if (
       path.startsWith('/account') ||
@@ -55,34 +55,25 @@ export async function proxy(request: NextRequest) {
     return supabaseResponse
   }
 
-  // ── Fetch role via service-role key (bypasses RLS — always reliable) ─────────
-  // Use @supabase/ssr (Edge-compatible) — NOT @supabase/supabase-js which uses Node APIs
-  const adminClient = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { cookies: { getAll: () => [], setAll: () => {} } }
-  )
-  const { data: staffUser } = await adminClient
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  const role: string = staffUser?.role ?? 'customer'
+  // ── Read role from cookie (set by /api/me after login — no DB query needed) ──
+  const role = request.cookies.get('arca-role')?.value ?? ''
   const isStaff = STAFF_ROLES.includes(role)
 
-  // ── Redirect logged-in users away from auth pages ────────────────────────────
+  // ── Redirect away from auth pages when already signed in ─────────────────────
   if (path.startsWith('/auth/login') || path.startsWith('/auth/signup')) {
-    if (isStaff) return NextResponse.redirect(new URL(getDashboardForRole(role), request.url))
-    return NextResponse.redirect(new URL('/', request.url))
+    if (isStaff && role) {
+      return NextResponse.redirect(new URL(getDashboardForRole(role), request.url))
+    }
+    // Customer or role not yet set — let them through to avoid trapping in loop
+    return supabaseResponse
   }
 
-  // ── Staff visiting customer /account → send to their portal ─────────────────
+  // ── Staff visiting /account → send to their portal ───────────────────────────
   if (path.startsWith('/account') && isStaff) {
     return NextResponse.redirect(new URL(getDashboardForRole(role), request.url))
   }
 
-  // ── Dashboard route protection ───────────────────────────────────────────────
+  // ── Dashboard access control ─────────────────────────────────────────────────
   if (path.startsWith('/dashboard/admin') && role !== 'corporate_admin') {
     return NextResponse.redirect(new URL('/', request.url))
   }

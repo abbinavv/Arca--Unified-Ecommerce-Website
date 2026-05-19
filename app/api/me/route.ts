@@ -1,29 +1,36 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { createClient as createServiceClient } from '@supabase/supabase-js'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 
 export async function GET() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    return NextResponse.json({ role: null, storeId: null })
+    const res = NextResponse.json({ role: null, storeId: null })
+    // Clear role cookie on sign-out
+    res.cookies.set('arca-role', '', { maxAge: 0, path: '/' })
+    return res
   }
 
-  // Use service role to bypass RLS — guaranteed to find the row
-  const admin = createServiceClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-
+  const admin = await createAdminClient()
   const { data: staffUser } = await admin
     .from('users')
     .select('role, store_id')
     .eq('id', user.id)
     .single()
 
-  return NextResponse.json({
-    role: staffUser?.role ?? 'customer',
-    storeId: staffUser?.store_id ?? null,
+  const role: string = staffUser?.role ?? 'customer'
+  const storeId: string | null = staffUser?.store_id ?? null
+
+  const res = NextResponse.json({ role, storeId })
+  // Store role in a lightweight HTTP-only cookie so proxy.ts can read it
+  // without a DB round-trip on every request
+  res.cookies.set('arca-role', role, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 7, // 7 days
   })
+  return res
 }
