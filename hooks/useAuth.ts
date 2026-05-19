@@ -12,6 +12,17 @@ type AuthState = {
   loading: boolean
 }
 
+async function fetchRoleFromServer(): Promise<{ role: UserRole | 'customer' | null; storeId: string | null }> {
+  try {
+    const res = await fetch('/api/me')
+    if (!res.ok) return { role: 'customer', storeId: null }
+    const data = await res.json()
+    return { role: data.role ?? 'customer', storeId: data.storeId ?? null }
+  } catch {
+    return { role: 'customer', storeId: null }
+  }
+}
+
 export function useAuth(): AuthState {
   const [state, setState] = useState<AuthState>({
     user: null,
@@ -23,24 +34,9 @@ export function useAuth(): AuthState {
   useEffect(() => {
     const supabase = createClient()
 
-    async function fetchRole(userId: string) {
-      // Check staff users table first
-      const { data: staffUser } = await supabase
-        .from('users')
-        .select('role, store_id')
-        .eq('id', userId)
-        .single()
-
-      if (staffUser) {
-        return { role: staffUser.role as UserRole, storeId: staffUser.store_id ?? null }
-      }
-      // Fall back to customer
-      return { role: 'customer' as const, storeId: null }
-    }
-
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (user) {
-        const { role, storeId } = await fetchRole(user.id)
+        const { role, storeId } = await fetchRoleFromServer()
         setState({ user, role, storeId, loading: false })
       } else {
         setState({ user: null, role: null, storeId: null, loading: false })
@@ -50,7 +46,7 @@ export function useAuth(): AuthState {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session?.user) {
-          const { role, storeId } = await fetchRole(session.user.id)
+          const { role, storeId } = await fetchRoleFromServer()
           setState({ user: session.user, role, storeId, loading: false })
         } else {
           setState({ user: null, role: null, storeId: null, loading: false })

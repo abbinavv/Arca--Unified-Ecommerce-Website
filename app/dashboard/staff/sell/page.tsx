@@ -76,6 +76,13 @@ export default function SellPage() {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
+    // Get associate's store_id so order is visible in manager portal
+    const { data: staffUser } = await supabase
+      .from('users')
+      .select('store_id')
+      .eq('id', user!.id)
+      .single()
+
     const num = `ORD-${Date.now().toString().slice(-8)}`
     const clientId = selectedClient.id === 'walkin' ? null : selectedClient.id
 
@@ -83,6 +90,7 @@ export default function SellPage() {
       .from('orders')
       .insert({
         client_id: clientId,
+        store_id: staffUser?.store_id ?? null,
         order_number: num,
         status: 'confirmed',
         channel: 'in_store',

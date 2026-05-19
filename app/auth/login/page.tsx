@@ -40,13 +40,10 @@ function LoginForm() {
       return
     }
 
-    const { data: staffUser } = await supabase
-      .from('users')
-      .select('role')
-      .eq('id', data.user.id)
-      .single()
-
-    const role = (staffUser?.role as UserRole) ?? 'customer'
+    // Use /api/me which queries with service-role key — bypasses RLS reliably
+    const res = await fetch('/api/me')
+    const { role: fetchedRole } = res.ok ? await res.json() : { role: 'customer' }
+    const role = (fetchedRole as UserRole) ?? 'customer'
     router.push(getRoleRedirect(role, next))
   }
 

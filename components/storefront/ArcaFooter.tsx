@@ -4,7 +4,8 @@ const FOOTER_LINKS = {
   Shop: [
     { href: '/shop/women', label: 'Women' },
     { href: '/shop/men', label: 'Men' },
-    { href: '/shop/lifestyle', label: 'Lifestyle' },
+    { href: '/shop/watches', label: 'Watches' },
+    { href: '/shop/jewellery', label: 'Jewellery' },
     { href: '/shop', label: 'All Products' },
   ],
   Account: [
