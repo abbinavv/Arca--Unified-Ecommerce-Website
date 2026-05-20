@@ -8,7 +8,6 @@ import { useAuth } from '@/hooks/useAuth'
 import { NotificationBell } from './NotificationBell'
 
 const NAV_LINKS = [
-  { href: '/shop', label: 'Shop' },
   { href: '/shop/women', label: 'Women' },
   { href: '/shop/men', label: 'Men' },
   { href: '/shop/watches', label: 'Watches' },
@@ -48,25 +47,18 @@ export function ArcaNav() {
         scrolled ? 'bg-arca-ivory/95 backdrop-blur-sm border-b border-arca-sand' : 'bg-transparent'
       }`}
     >
-      <nav className="max-w-screen-xl mx-auto px-6 h-16 flex items-center justify-between">
-        {/* Left — nav links (desktop) */}
-        <div className="hidden md:flex items-center gap-8">
-          {NAV_LINKS.map(link => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`text-xs tracking-arca uppercase transition-colors hover:text-arca-gold ${
-                pathname.startsWith(link.href) ? 'text-arca-ink' : 'text-arca-charcoal'
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
+      <nav className="max-w-screen-xl mx-auto px-6 h-16 flex items-center gap-10">
+        {/* Wordmark — left */}
+        <Link
+          href="/"
+          className="font-display text-xl font-light tracking-[0.3em] uppercase text-arca-ink hover:text-arca-gold transition-colors flex-shrink-0"
+        >
+          Arca
+        </Link>
 
         {/* Mobile — hamburger */}
         <button
-          className="md:hidden flex flex-col gap-1.5 p-1"
+          className="md:hidden flex flex-col gap-1.5 p-1 ml-auto"
           onClick={() => setMenuOpen(v => !v)}
           aria-label="Menu"
         >
@@ -75,58 +67,79 @@ export function ArcaNav() {
           <span className={`block w-5 h-px bg-arca-ink transition-all ${menuOpen ? '-rotate-45 -translate-y-2.5' : ''}`} />
         </button>
 
-        {/* Center — wordmark */}
-        <Link
-          href="/"
-          className="absolute left-1/2 -translate-x-1/2 font-display text-xl font-light tracking-[0.3em] uppercase text-arca-ink hover:text-arca-gold transition-colors"
-        >
-          Arca
-        </Link>
+        {/* Center — category links (desktop) */}
+        <div className="hidden md:flex items-center gap-7 flex-1">
+          {NAV_LINKS.map(link => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`text-[11px] tracking-arca uppercase transition-colors hover:text-arca-gold ${
+                pathname.startsWith(link.href) ? 'text-arca-ink' : 'text-arca-stone'
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
 
-        {/* Right — account + cart */}
-        <div className="flex items-center gap-5">
+        {/* Right — account + cart (desktop) */}
+        <div className="hidden md:flex items-center gap-5 flex-shrink-0">
           {dashboardHref ? (
             <Link
               href={dashboardHref}
-              className="hidden md:block text-xs tracking-arca uppercase text-arca-charcoal hover:text-arca-gold transition-colors"
+              className="text-[11px] tracking-arca uppercase text-arca-stone hover:text-arca-gold transition-colors"
             >
               Portal
             </Link>
           ) : user ? (
             <Link
               href="/account"
-              className="hidden md:block text-xs tracking-arca uppercase text-arca-charcoal hover:text-arca-gold transition-colors"
+              className="text-[11px] tracking-arca uppercase text-arca-stone hover:text-arca-gold transition-colors"
             >
               Account
             </Link>
           ) : (
             <Link
               href="/auth/login"
-              className="hidden md:block text-xs tracking-arca uppercase text-arca-charcoal hover:text-arca-gold transition-colors"
+              className="text-[11px] tracking-arca uppercase text-arca-stone hover:text-arca-gold transition-colors"
             >
               Sign in
             </Link>
           )}
 
-          {/* Notifications — customers only */}
           {user && !dashboardHref && <NotificationBell userId={user.id} />}
 
-          {/* Cart icon */}
           <button
             onClick={openCart}
-            className="relative flex items-center justify-center w-8 h-8 hover:text-arca-gold transition-colors"
+            className="relative flex items-center justify-center w-7 h-7 text-arca-stone hover:text-arca-gold transition-colors"
             aria-label="Cart"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+            <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
             </svg>
             {itemCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-arca-gold text-white text-[10px] font-medium rounded-full flex items-center justify-center leading-none">
+              <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-arca-gold text-white text-[9px] font-medium rounded-full flex items-center justify-center leading-none">
                 {itemCount > 9 ? '9+' : itemCount}
               </span>
             )}
           </button>
         </div>
+
+        {/* Mobile cart */}
+        <button
+          onClick={openCart}
+          className="md:hidden relative flex items-center justify-center w-7 h-7 text-arca-stone hover:text-arca-gold transition-colors"
+          aria-label="Cart"
+        >
+          <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
+          </svg>
+          {itemCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-arca-gold text-white text-[9px] font-medium rounded-full flex items-center justify-center leading-none">
+              {itemCount > 9 ? '9+' : itemCount}
+            </span>
+          )}
+        </button>
       </nav>
 
       {/* Mobile menu */}

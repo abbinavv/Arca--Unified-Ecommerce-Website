@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import { PageTransition, StaggerList, StaggerItem } from '@/components/shared/PageTransition'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Dashboard — Arca Staff' }
@@ -44,9 +45,10 @@ export default async function StaffDashboard() {
   const todaySales = (todayOrders ?? []).reduce((s: number, o: any) => s + Number(o.grand_total), 0)
 
   return (
-    <div className="p-8">
+    <PageTransition>
+    <div className="p-8 max-w-5xl">
       <div className="mb-8">
-        <h1 className="font-display text-3xl font-light text-arca-ink">
+        <h1 className="font-display text-4xl font-light text-arca-ink">
           Good {getGreeting()}, {staffUser?.first_name ?? 'there'}
         </h1>
         <p className="text-sm text-arca-stone mt-1">
@@ -55,7 +57,7 @@ export default async function StaffDashboard() {
       </div>
 
       {/* KPI cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+      <StaggerList className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
         <StatCard
           label="Today's appointments"
           value={appointments?.length ?? 0}
@@ -73,7 +75,7 @@ export default async function StaffDashboard() {
           value={tickets?.length ?? 0}
           href="/dashboard/staff/service"
         />
-      </div>
+      </StaggerList>
 
       <div className="grid md:grid-cols-2 gap-8">
         {/* Today's appointments */}
@@ -150,6 +152,7 @@ export default async function StaffDashboard() {
         </div>
       )}
     </div>
+    </PageTransition>
   )
 }
 
@@ -162,9 +165,9 @@ function getGreeting() {
 
 function StatCard({ label, value, href }: { label: string; value: string | number; href: string }) {
   return (
-    <Link href={href} className="group p-5 border border-arca-sand hover:border-arca-ink transition-colors">
-      <p className="text-2xl font-mono text-arca-ink mb-1">{value}</p>
-      <p className="text-xs text-arca-stone">{label}</p>
+    <Link href={href} className="group block p-5 bg-white border border-[#E8E8E4] hover:border-arca-ink transition-colors">
+      <p className="text-2xl font-mono font-light text-arca-ink mb-1">{value}</p>
+      <p className="text-[11px] text-arca-stone">{label}</p>
     </Link>
   )
 }

@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
-import { ProductCard } from '@/components/storefront/product/ProductCard'
+import { AnimatedProductGrid } from '@/components/storefront/product/AnimatedProductGrid'
 import { ShopFilters } from '@/components/storefront/product/ShopFilters'
 import type { Metadata } from 'next'
 
@@ -104,11 +104,7 @@ export default async function CategoryPage({
               </a>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
-              {products.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            <AnimatedProductGrid products={products} />
           )}
         </div>
       </div>

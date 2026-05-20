@@ -44,13 +44,15 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
     <>
       <div className="space-y-3">
         {/* Main image */}
-        <div className="relative aspect-[3/4] bg-arca-cream overflow-hidden group">
+        <div
+          className="relative aspect-[3/4] bg-arca-cream overflow-hidden group cursor-zoom-in"
+          onClick={openLightbox}
+        >
           {activeImage ? (
             <img
               src={activeImage}
               alt={productName}
-              className="w-full h-full object-cover cursor-zoom-in"
-              onClick={openLightbox}
+              className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
             />
           ) : (
             <div className="absolute inset-0 bg-arca-bone flex items-center justify-center">
@@ -60,11 +62,21 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             </div>
           )}
 
+          {/* Fullscreen hint */}
+          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+            <div className="bg-black/40 p-1.5">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" />
+                <line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" />
+              </svg>
+            </div>
+          </div>
+
           {/* Arrows */}
           {hasMultiple && (
             <>
               <button
-                onClick={prev}
+                onClick={e => { e.stopPropagation(); prev() }}
                 aria-label="Previous image"
                 className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-black/60"
               >
@@ -73,7 +85,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 </svg>
               </button>
               <button
-                onClick={next}
+                onClick={e => { e.stopPropagation(); next() }}
                 aria-label="Next image"
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-black/60"
               >
@@ -98,7 +110,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             {images.map((url, i) => (
               <button
                 key={i}
-                onClick={() => setActiveIndex(i)}
+                onClick={() => { setActiveIndex(i) }}
                 aria-label={`View image ${i + 1}`}
                 className={`flex-shrink-0 w-16 h-16 overflow-hidden border transition-colors duration-150 ${
                   i === activeIndex ? 'border-arca-ink' : 'border-arca-sand hover:border-arca-stone'

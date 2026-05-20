@@ -12,6 +12,11 @@ const SERVICE_TYPES = [
   { value: 'jewellery_consultation', label: 'Jewellery Consultation' },
 ]
 
+const TIME_SLOTS = [
+  '10:00', '10:30', '11:00', '11:30', '12:00',
+  '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
+]
+
 type Store = { id: string; name: string; city: string | null }
 
 export function BookAppointmentForm({ stores }: { stores: Store[] }) {
@@ -62,12 +67,22 @@ export function BookAppointmentForm({ stores }: { stores: Store[] }) {
 
   if (success) {
     return (
-      <div className="py-4 text-center">
-        <p className="text-sm text-arca-ink mb-1">Appointment requested.</p>
+      <div className="py-6 text-center">
+        <svg viewBox="0 0 56 56" fill="none" className="w-14 h-14 mx-auto mb-4">
+          <circle cx="28" cy="28" r="24" stroke="#B8952A" strokeWidth="1.2"
+            strokeDasharray="151" strokeDashoffset="151"
+            style={{ animation: 'draw-circle 0.45s ease-out 0.05s forwards' }} />
+          <path d="M17 28l8 8 14-16" stroke="#B8952A" strokeWidth="1.6"
+            strokeLinecap="round" strokeLinejoin="round"
+            strokeDasharray="36" strokeDashoffset="36"
+            style={{ animation: 'draw-tick 0.3s ease-out 0.45s forwards' }} />
+          <style>{`@keyframes draw-circle{to{stroke-dashoffset:0}}@keyframes draw-tick{to{stroke-dashoffset:0}}`}</style>
+        </svg>
+        <p className="text-sm text-arca-ink mb-0.5">Appointment requested</p>
         <p className="text-xs text-arca-stone">Our team will confirm within 24 hours.</p>
         <button
           onClick={() => { setSuccess(false); setStoreId(''); setServiceType(''); setDate(''); setTime(''); setNotes('') }}
-          className="mt-4 text-xs text-arca-gold underline underline-offset-2"
+          className="mt-5 text-xs text-arca-gold underline underline-offset-2 hover:text-arca-gold-dk transition-colors"
         >
           Book another
         </button>
@@ -119,14 +134,24 @@ export function BookAppointmentForm({ stores }: { stores: Store[] }) {
         />
       </div>
 
-      <div>
+      <div className="md:col-span-2">
         <label className="block text-[10px] tracking-arca uppercase text-arca-charcoal mb-2">Preferred time</label>
-        <input
-          type="time"
-          value={time}
-          onChange={e => setTime(e.target.value)}
-          className="w-full h-10 px-3 bg-transparent border border-arca-sand text-arca-ink text-sm focus:outline-none focus:border-arca-ink transition-colors"
-        />
+        <div className="flex flex-wrap gap-2">
+          {TIME_SLOTS.map(slot => (
+            <button
+              key={slot}
+              type="button"
+              onClick={() => setTime(slot === time ? '' : slot)}
+              className={`px-3 py-1.5 text-xs border transition-colors ${
+                time === slot
+                  ? 'border-arca-ink bg-arca-ink text-arca-ivory'
+                  : 'border-arca-sand text-arca-stone hover:border-arca-charcoal hover:text-arca-ink'
+              }`}
+            >
+              {slot}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="md:col-span-2">

@@ -3,6 +3,7 @@
 import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { Eye, EyeOff } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { UserRole } from '@/types/database'
 
@@ -25,6 +26,7 @@ function LoginForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -34,8 +36,20 @@ function LoginForm() {
     const supabase = createClient()
     const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password })
 
-    if (authError || !data.user) {
-      setError(authError?.message ?? 'Invalid email or password.')
+    if (authError) {
+      if (authError.message.toLowerCase().includes('email not confirmed')) {
+        // Resend confirmation and send to verify page
+        await supabase.auth.resend({ type: 'signup', email })
+        router.push(`/auth/verify?email=${encodeURIComponent(email)}`)
+        return
+      }
+      setError(authError.message ?? 'Invalid email or password.')
+      setLoading(false)
+      return
+    }
+
+    if (!data.user) {
+      setError('Invalid email or password.')
       setLoading(false)
       return
     }
@@ -84,15 +98,25 @@ function LoginForm() {
               Forgot password?
             </Link>
           </div>
-          <input
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-            className="w-full h-11 px-4 bg-transparent border border-arca-sand text-arca-ink text-sm placeholder:text-arca-stone focus:outline-none focus:border-arca-ink transition-colors"
-            placeholder="••••••••"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+              className="w-full h-11 px-4 pr-11 bg-transparent border border-arca-sand text-arca-ink text-sm placeholder:text-arca-stone focus:outline-none focus:border-arca-ink transition-colors"
+              placeholder="••••••••"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(v => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-arca-stone hover:text-arca-ink transition-colors"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff size={15} strokeWidth={1.5} /> : <Eye size={15} strokeWidth={1.5} />}
+            </button>
+          </div>
         </div>
 
         {error && (

@@ -28,6 +28,7 @@ export function CheckoutFlow() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [orderNumber, setOrderNumber] = useState('')
+  const [orderId, setOrderId] = useState('')
 
   useEffect(() => {
     if (items.length === 0 && !orderNumber) router.replace('/shop')
@@ -107,6 +108,7 @@ export function CheckoutFlow() {
       }
 
       clearCart()
+      setOrderId(order.id)
       setOrderNumber(order.order_number)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -119,20 +121,41 @@ export function CheckoutFlow() {
     return (
       <div className="min-h-screen bg-arca-ivory flex items-center justify-center">
         <div className="text-center max-w-sm px-6">
-          <div className="w-16 h-16 border border-arca-gold mx-auto mb-8 flex items-center justify-center">
-            <svg className="w-7 h-7 text-arca-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
+          {/* Animated tick */}
+          <div className="relative w-20 h-20 mx-auto mb-8">
+            <svg viewBox="0 0 80 80" fill="none" className="w-20 h-20">
+              <circle
+                cx="40" cy="40" r="36"
+                stroke="#B8952A" strokeWidth="1.2"
+                strokeDasharray="226" strokeDashoffset="226"
+                style={{ animation: 'draw-circle 0.5s ease-out 0.1s forwards' }}
+              />
+              <path
+                d="M24 40l11 11 21-22"
+                stroke="#B8952A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                strokeDasharray="50" strokeDashoffset="50"
+                style={{ animation: 'draw-tick 0.35s ease-out 0.55s forwards' }}
+              />
             </svg>
           </div>
+          <style>{`
+            @keyframes draw-circle { to { stroke-dashoffset: 0; } }
+            @keyframes draw-tick   { to { stroke-dashoffset: 0; } }
+          `}</style>
           <h1 className="font-display text-3xl font-light text-arca-ink mb-2">Order Placed</h1>
           <p className="text-sm text-arca-stone mb-1">Thank you for your order.</p>
-          <p className="text-xs font-mono text-arca-charcoal mt-3 mb-8">#{orderNumber}</p>
-          <Link
-            href="/account/orders"
-            className="inline-block px-8 py-3 bg-arca-ink text-arca-ivory text-xs tracking-arca uppercase hover:bg-arca-charcoal transition-colors"
-          >
-            View Orders
-          </Link>
+          <p className="text-xs font-mono text-arca-stone/70 mt-2 mb-8 tracking-widest">#{orderNumber}</p>
+          <div className="flex flex-col gap-3 items-center">
+            <Link
+              href={`/account/orders/${orderId}?new=1`}
+              className="inline-block px-8 py-3 bg-arca-ink text-arca-ivory text-xs tracking-arca uppercase hover:bg-arca-charcoal transition-colors"
+            >
+              View Order
+            </Link>
+            <Link href="/shop" className="text-xs text-arca-stone hover:text-arca-gold transition-colors">
+              Continue shopping
+            </Link>
+          </div>
         </div>
       </div>
     )

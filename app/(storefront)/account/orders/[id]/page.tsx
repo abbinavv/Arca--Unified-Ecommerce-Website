@@ -4,11 +4,19 @@ import { createClient } from '@/lib/supabase/server'
 import type { Metadata } from 'next'
 
 type Params = Promise<{ id: string }>
+type SearchParams = Promise<{ new?: string }>
 
 export const metadata: Metadata = { title: 'Order — Arca' }
 
-export default async function OrderDetailPage({ params }: { params: Params }) {
+export default async function OrderDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Params
+  searchParams: SearchParams
+}) {
   const { id } = await params
+  const { new: isNew } = await searchParams
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -26,6 +34,32 @@ export default async function OrderDetailPage({ params }: { params: Params }) {
 
   return (
     <div>
+      {isNew && (
+        <div className="mb-8 p-6 border border-arca-sand bg-arca-cream flex items-center gap-5">
+          <svg viewBox="0 0 44 44" fill="none" className="w-11 h-11 flex-shrink-0">
+            <circle
+              cx="22" cy="22" r="19"
+              stroke="#B8952A" strokeWidth="1.2"
+              strokeDasharray="120" strokeDashoffset="120"
+              style={{ animation: 'draw-circle 0.45s ease-out 0.05s forwards' }}
+            />
+            <path
+              d="M13 22l6 6 12-12"
+              stroke="#B8952A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
+              strokeDasharray="28" strokeDashoffset="28"
+              style={{ animation: 'draw-tick 0.3s ease-out 0.45s forwards' }}
+            />
+            <style>{`
+              @keyframes draw-circle { to { stroke-dashoffset: 0; } }
+              @keyframes draw-tick   { to { stroke-dashoffset: 0; } }
+            `}</style>
+          </svg>
+          <div>
+            <p className="text-sm font-medium text-arca-ink">Your order has been placed</p>
+            <p className="text-xs text-arca-stone mt-0.5">We&apos;ll confirm and prepare your items. Expect an update within 24 hours.</p>
+          </div>
+        </div>
+      )}
       <div className="flex items-center gap-4 mb-10">
         <Link href="/account/orders" className="text-xs text-arca-stone hover:text-arca-ink transition-colors">
           ← Orders

@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import { PageTransition, StaggerList, StaggerItem } from '@/components/shared/PageTransition'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Manager Overview — Arca' }
@@ -42,32 +43,40 @@ export default async function ManagerOverview() {
   ]
 
   return (
-    <div className="p-8">
-      <h1 className="font-display text-3xl font-light text-arca-ink mb-8">Overview</h1>
+    <PageTransition>
+      <div className="p-8 max-w-5xl">
+        <div className="mb-8">
+          <h1 className="font-display text-4xl font-light text-arca-ink">Overview</h1>
+          <p className="text-sm text-arca-stone mt-1">
+            {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+          </p>
+        </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-        {tiles.map(tile => (
-          <Link
-            key={tile.href}
-            href={tile.href}
-            className={`group p-5 border transition-colors ${
-              tile.warn
-                ? 'border-amber-200 bg-amber-50 hover:border-amber-400'
-                : 'border-arca-sand hover:border-arca-ink'
-            }`}
-          >
-            <p className={`text-3xl font-mono mb-1 ${tile.warn ? 'text-amber-700' : 'text-arca-ink'}`}>
-              {tile.value}
-            </p>
-            <p className="text-xs text-arca-stone">{tile.label}</p>
-          </Link>
-        ))}
-      </div>
+        <StaggerList className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+          {tiles.map(tile => (
+            <StaggerItem key={tile.href}>
+              <Link
+                href={tile.href}
+                className={`group block p-5 border transition-colors ${
+                  tile.warn
+                    ? 'border-amber-200 bg-amber-50 hover:border-amber-400'
+                    : 'bg-white border-[#E8E8E4] hover:border-arca-ink'
+                }`}
+              >
+                <p className={`text-2xl font-mono font-light mb-1 ${tile.warn ? 'text-amber-700' : 'text-arca-ink'}`}>
+                  {tile.value}
+                </p>
+                <p className={`text-[11px] ${tile.warn ? 'text-amber-600' : 'text-arca-stone'}`}>{tile.label}</p>
+              </Link>
+            </StaggerItem>
+          ))}
+        </StaggerList>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        <QuickLinks />
+        <div className="grid md:grid-cols-2 gap-8">
+          <QuickLinks />
+        </div>
       </div>
-    </div>
+    </PageTransition>
   )
 }
 

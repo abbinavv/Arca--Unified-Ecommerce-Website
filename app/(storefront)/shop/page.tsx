@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
-import { ProductCard } from '@/components/storefront/product/ProductCard'
+import { AnimatedProductGrid } from '@/components/storefront/product/AnimatedProductGrid'
 import { ShopFilters } from '@/components/storefront/product/ShopFilters'
 
 type SearchParams = Promise<{
@@ -78,11 +78,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
               <p className="text-xs text-arca-stone/60">Try adjusting your filters</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
-              {products.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            <AnimatedProductGrid products={products} />
           )}
         </div>
       </div>

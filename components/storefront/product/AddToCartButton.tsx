@@ -12,6 +12,7 @@ type Props = {
     price: number
     image_urls: string[] | null
   }
+  wishlistSlot?: React.ReactNode
 }
 
 const FULFILLMENT_OPTIONS = [
@@ -22,7 +23,7 @@ const FULFILLMENT_OPTIONS = [
 
 type FulfillmentType = 'standard' | 'bopis' | 'ship_from_store'
 
-export function AddToCartButton({ product }: Props) {
+export function AddToCartButton({ product, wishlistSlot }: Props) {
   const addItem = useCartStore(s => s.addItem)
   const openCart = useCartStore(s => s.openCart)
   const cartItems = useCartStore(s => s.items)
@@ -39,9 +40,8 @@ export function AddToCartButton({ product }: Props) {
         .from('inventory')
         .select('available_qty')
         .eq('product_id', product.id)
-        .limit(1)
-        .single()
-      setAvailableQty(data?.available_qty ?? 0)
+      const total = (data ?? []).reduce((sum, row) => sum + (row.available_qty ?? 0), 0)
+      setAvailableQty(data && data.length > 0 ? total : null)
       setStockLoading(false)
     }
     checkStock()
@@ -120,14 +120,17 @@ export function AddToCartButton({ product }: Props) {
         </div>
       </div>
 
-      {/* Add to cart */}
-      <button
-        onClick={handleAdd}
-        disabled={isDisabled}
-        className={getButtonClass()}
-      >
-        {getButtonLabel()}
-      </button>
+      {/* Add to cart + optional wishlist slot */}
+      <div className="flex gap-2">
+        <button
+          onClick={handleAdd}
+          disabled={isDisabled}
+          className={`flex-1 ${getButtonClass().replace('w-full ', '')}`}
+        >
+          {getButtonLabel()}
+        </button>
+        {wishlistSlot}
+      </div>
     </div>
   )
 }

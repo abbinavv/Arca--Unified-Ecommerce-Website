@@ -4,8 +4,10 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { AddToCartButton } from '@/components/storefront/product/AddToCartButton'
+import { WishlistButton } from '@/components/storefront/product/WishlistButton'
 import { ProductCard } from '@/components/storefront/product/ProductCard'
 import { ProductGallery } from '@/components/storefront/product/ProductGallery'
+import { ProductReviews } from '@/components/storefront/product/ProductReviews'
 import type { Metadata } from 'next'
 
 type Params = Promise<{ id: string }>
@@ -93,7 +95,7 @@ export default async function ProductPage({ params }: { params: Params }) {
             <span className="text-xs font-sans text-arca-stone ml-2">incl. taxes</span>
           </p>
 
-          {/* Add to cart */}
+          {/* Add to cart + Wishlist */}
           <AddToCartButton
             product={{
               id: product.id,
@@ -102,6 +104,7 @@ export default async function ProductPage({ params }: { params: Params }) {
               price: product.price,
               image_urls: product.image_urls,
             }}
+            wishlistSlot={<WishlistButton productId={product.id} />}
           />
 
           {/* Description */}
@@ -131,6 +134,9 @@ export default async function ProductPage({ params }: { params: Params }) {
           </div>
         </div>
       </div>
+
+      {/* Reviews */}
+      <ProductReviews productId={product.id} />
 
       {/* Related products */}
       {related.length > 0 && (

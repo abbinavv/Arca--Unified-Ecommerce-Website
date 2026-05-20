@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { Eye, EyeOff } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 export default function SignupPage() {
@@ -16,6 +17,7 @@ export default function SignupPage() {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   function set(field: keyof typeof form) {
     return (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -28,8 +30,6 @@ export default function SignupPage() {
     setLoading(true)
 
     const supabase = createClient()
-
-    // Create auth user
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
@@ -37,27 +37,13 @@ export default function SignupPage() {
         data: {
           first_name: form.firstName,
           last_name: form.lastName,
+          phone: form.phone || null,
         },
       },
     })
 
     if (signUpError || !data.user) {
       setError(signUpError?.message ?? 'Could not create account.')
-      setLoading(false)
-      return
-    }
-
-    // Create client profile row
-    const { error: profileError } = await supabase.from('clients').insert({
-      id: data.user.id,
-      email: form.email,
-      first_name: form.firstName,
-      last_name: form.lastName,
-      phone: form.phone || null,
-    })
-
-    if (profileError) {
-      setError('Account created but profile setup failed. Please contact support.')
       setLoading(false)
       return
     }
@@ -136,16 +122,26 @@ export default function SignupPage() {
           <label className="block text-xs tracking-arca text-arca-charcoal uppercase mb-2">
             Password
           </label>
-          <input
-            type="password"
-            value={form.password}
-            onChange={set('password')}
-            required
-            minLength={8}
-            autoComplete="new-password"
-            className="w-full h-11 px-4 bg-transparent border border-arca-sand text-arca-ink text-sm placeholder:text-arca-stone focus:outline-none focus:border-arca-ink transition-colors"
-            placeholder="At least 8 characters"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              value={form.password}
+              onChange={set('password')}
+              required
+              minLength={8}
+              autoComplete="new-password"
+              className="w-full h-11 px-4 pr-11 bg-transparent border border-arca-sand text-arca-ink text-sm placeholder:text-arca-stone focus:outline-none focus:border-arca-ink transition-colors"
+              placeholder="At least 8 characters"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(v => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-arca-stone hover:text-arca-ink transition-colors"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff size={15} strokeWidth={1.5} /> : <Eye size={15} strokeWidth={1.5} />}
+            </button>
+          </div>
         </div>
 
         {error && (

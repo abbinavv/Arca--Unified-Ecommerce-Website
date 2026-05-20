@@ -1,10 +1,10 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Audit Log — Arca Admin' }
 
 export default async function AuditLogPage() {
-  const supabase = await createClient()
+  const supabase = await createAdminClient()
 
   const { data: logs } = await supabase
     .from('admin_audit_logs')

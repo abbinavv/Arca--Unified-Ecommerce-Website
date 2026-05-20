@@ -1,15 +1,16 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
+import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Catalog — Arca Admin' }
 
 export default async function AdminCatalogPage() {
-  const supabase = await createClient()
+  const supabase = await createAdminClient()
 
   const { data: products } = await supabase
     .from('products')
-    .select('id, name, brand, sku, price, category_id, deleted_at, categories(name)')
+    .select('id, name, brand, sku, price, category_id, deleted_at, image_urls, categories(name)')
     .order('created_at', { ascending: false })
 
   const active = products?.filter(p => !p.deleted_at) ?? []
@@ -47,7 +48,17 @@ export default async function AdminCatalogPage() {
         <div className="divide-y divide-[#E8E8E4]">
           {active.map((product: any) => (
             <div key={product.id} className="grid grid-cols-[40px_1fr_120px_120px_100px_80px] gap-4 px-6 py-3.5 items-center hover:bg-[#F9F9F7] transition-colors">
-              <div className="w-8 h-8 bg-arca-bone" />
+              <div className="w-8 h-8 bg-arca-bone flex-shrink-0 overflow-hidden relative">
+                {(product as any).image_urls?.[0] && (
+                  <Image
+                    src={(product as any).image_urls[0]}
+                    alt={product.name}
+                    fill
+                    className="object-cover"
+                    sizes="32px"
+                  />
+                )}
+              </div>
               <div>
                 {product.brand && <p className="text-[10px] text-arca-stone">{product.brand}</p>}
                 <p className="text-sm text-arca-ink">{product.name}</p>
