@@ -3,6 +3,14 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Inventory — Arca Manager' }
 
+interface InventoryRow {
+  id: string
+  quantity: number
+  reserved_quantity: number
+  available_qty: number | null
+  products: { id: string; name: string; brand: string | null; sku: string } | null
+}
+
 export default async function InventoryPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -49,7 +57,7 @@ export default async function InventoryPage() {
             <span className="text-right">Available</span>
           </div>
           <div className="divide-y divide-arca-sand">
-            {inventory.map((row: any) => {
+            {inventory.map((row: InventoryRow) => {
               const low = (row.available_qty ?? 0) <= 2
               return (
                 <div

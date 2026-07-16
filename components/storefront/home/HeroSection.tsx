@@ -36,7 +36,7 @@ export function HeroSection() {
             <em className="not-italic text-arca-charcoal">Collections</em>
           </h1>
           <p className="text-sm leading-relaxed text-arca-stone max-w-xs mb-10">
-            Curated pieces from the world's most celebrated ateliers.
+            Curated pieces from the world&rsquo;s most celebrated ateliers.
             Delivered with the care they deserve.
           </p>
           <div className="flex items-center gap-6">

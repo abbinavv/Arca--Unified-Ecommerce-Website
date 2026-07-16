@@ -6,6 +6,13 @@ import type { Metadata } from 'next'
 type Params = Promise<{ id: string }>
 type SearchParams = Promise<{ new?: string }>
 
+type OrderItem = {
+  id: string
+  quantity: number
+  line_total: number
+  products: { name: string | null; brand: string | null; image_urls: string[] | null } | null
+}
+
 export const metadata: Metadata = { title: 'Order — Arca' }
 
 export default async function OrderDetailPage({
@@ -102,14 +109,14 @@ export default async function OrderDetailPage({
         <div>
           <h2 className="text-[10px] tracking-arca uppercase text-arca-stone mb-4">Items</h2>
           <div className="divide-y divide-arca-sand border border-arca-sand">
-            {(order.order_items ?? []).map((item: any) => (
+            {(order.order_items ?? []).map((item: OrderItem) => (
               <div key={item.id} className="flex items-start gap-4 p-4">
                 <div className="w-16 h-20 bg-arca-bone flex-shrink-0 overflow-hidden">
                   {item.products?.image_urls?.[0] && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={item.products.image_urls[0]}
-                      alt={item.products?.name}
+                      alt={item.products?.name ?? 'Product'}
                       className="w-full h-full object-cover"
                     />
                   )}

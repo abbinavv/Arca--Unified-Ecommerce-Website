@@ -1,4 +1,4 @@
-import { createClient, createAdminClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { TrendingUp, Users, ShoppingBag, UserCheck, Package, Store, BarChart2, FileText } from 'lucide-react'
 import { PageTransition, StaggerList, StaggerItem } from '@/components/shared/PageTransition'
@@ -6,12 +6,19 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Overview — Arca Admin' }
 
+function getReportingWindow() {
+  const now = Date.now()
+  return {
+    d30: new Date(now - 30 * 86400000).toISOString(),
+    d7: new Date(now - 7 * 86400000).toISOString(),
+    today: new Date(now).toISOString().split('T')[0],
+  }
+}
+
 export default async function AdminKPIPage() {
   const admin = await createAdminClient()
 
-  const d30 = new Date(Date.now() - 30 * 86400000).toISOString()
-  const d7 = new Date(Date.now() - 7 * 86400000).toISOString()
-  const today = new Date().toISOString().split('T')[0]
+  const { d30, d7, today } = getReportingWindow()
 
   const [
     { count: orders30d },
@@ -34,8 +41,8 @@ export default async function AdminKPIPage() {
       .limit(6),
   ])
 
-  const rev30d = (revenue30d ?? []).reduce((s: number, o: any) => s + Number(o.grand_total), 0)
-  const todayRev = (todayOrders ?? []).reduce((s: number, o: any) => s + Number(o.grand_total), 0)
+  const rev30d = (revenue30d ?? []).reduce((s: number, o: { grand_total: number }) => s + Number(o.grand_total), 0)
+  const todayRev = (todayOrders ?? []).reduce((s: number, o: { grand_total: number }) => s + Number(o.grand_total), 0)
 
   const kpis = [
     {
@@ -123,7 +130,7 @@ export default async function AdminKPIPage() {
                   <p className="text-xs text-arca-stone">No orders yet</p>
                 </div>
               ) : (
-                recentOrders.map((order: any) => (
+                recentOrders.map((order: { id: string; order_number: string; grand_total: number; status: string; created_at: string }) => (
                   <div key={order.id} className="flex items-center justify-between px-5 py-3.5">
                     <div>
                       <p className="text-sm font-mono text-arca-ink">#{order.order_number}</p>

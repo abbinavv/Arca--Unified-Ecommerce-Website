@@ -25,7 +25,9 @@ export default async function AppointmentsPage() {
     .order('appointment_date')
     .order('appointment_time')
 
-  const grouped: Record<string, typeof appointments> = {}
+  type Appointment = NonNullable<typeof appointments>[number]
+
+  const grouped: Record<string, Appointment[]> = {}
   for (const appt of appointments ?? []) {
     const key = appt.appointment_date ?? 'unknown'
     if (!grouped[key]) grouped[key] = []
@@ -50,7 +52,7 @@ export default async function AppointmentsPage() {
                 })}
               </h2>
               <div className="divide-y divide-arca-sand border border-arca-sand">
-                {(appts ?? []).map((appt: any) => (
+                {(appts ?? []).map((appt) => (
                   <div key={appt.id} className="px-6 py-4 flex items-start justify-between gap-6">
                     <div className="flex items-start gap-4">
                       <p className="text-sm font-mono text-arca-ink w-12 flex-shrink-0 pt-0.5">
@@ -65,7 +67,7 @@ export default async function AppointmentsPage() {
                           <p className="text-xs text-arca-stone/60 mt-0.5">{appt.clients.phone}</p>
                         )}
                         {appt.notes && (
-                          <p className="text-xs text-arca-stone mt-1 italic">"{appt.notes}"</p>
+                          <p className="text-xs text-arca-stone mt-1 italic">&ldquo;{appt.notes}&rdquo;</p>
                         )}
                       </div>
                     </div>

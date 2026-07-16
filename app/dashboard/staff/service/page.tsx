@@ -4,6 +4,18 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Service Tickets — Arca Staff' }
 
+type Ticket = {
+  id: string
+  ticket_number: string | null
+  type: string
+  status: string
+  created_at: string
+  estimated_cost: number | null
+  currency: string
+  clients: { first_name: string | null; last_name: string | null } | null
+  products: { name: string } | null
+}
+
 const STATUS_STYLE: Record<string, string> = {
   intake: 'text-amber-700 bg-amber-50',
   diagnosed: 'text-blue-700 bg-blue-50',
@@ -50,7 +62,7 @@ export default async function ServiceTicketsPage() {
           </div>
         ) : (
           <div className="divide-y divide-arca-sand border border-arca-sand">
-            {open.map((ticket: any) => (
+            {open.map((ticket) => (
               <TicketRow key={ticket.id} ticket={ticket} />
             ))}
           </div>
@@ -62,7 +74,7 @@ export default async function ServiceTicketsPage() {
         <section>
           <h2 className="text-xs tracking-arca uppercase text-arca-stone mb-4">Closed ({closed.length})</h2>
           <div className="divide-y divide-arca-sand border border-arca-sand opacity-60">
-            {closed.map((ticket: any) => (
+            {closed.map((ticket) => (
               <TicketRow key={ticket.id} ticket={ticket} />
             ))}
           </div>
@@ -72,7 +84,7 @@ export default async function ServiceTicketsPage() {
   )
 }
 
-function TicketRow({ ticket }: { ticket: any }) {
+function TicketRow({ ticket }: { ticket: Ticket }) {
   return (
     <Link
       href={`/dashboard/staff/service/${ticket.id}`}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
@@ -196,9 +197,12 @@ export function ServiceTicketForm({ products }: { products: Product[] }) {
           <div className="flex gap-2 mt-2 flex-wrap">
             {photos.map((file, i) => (
               <div key={i} className="relative group">
-                <img
+                <Image
                   src={URL.createObjectURL(file)}
                   alt={file.name}
+                  width={64}
+                  height={64}
+                  unoptimized
                   className="w-16 h-16 object-cover border border-arca-sand"
                 />
                 <button

@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useCallback } from 'react'
+import Link from 'next/link'
 
 type Category = { id: string; name: string }
 
@@ -68,7 +69,7 @@ export function ShopFilters({ categories, currentCategory, totalCount }: Props) 
         <div className="mb-8">
           <h3 className="text-[10px] tracking-arca uppercase text-arca-ink mb-3">Category</h3>
           <div className="space-y-2">
-            <a
+            <Link
               href="/shop"
               className={`block text-sm transition-colors ${
                 !currentCategory
@@ -77,12 +78,12 @@ export function ShopFilters({ categories, currentCategory, totalCount }: Props) 
               }`}
             >
               All
-            </a>
+            </Link>
             {categories.map(cat => {
               const slug = cat.name.toLowerCase()
               const active = currentCategory?.toLowerCase() === slug
               return (
-                <a
+                <Link
                   key={cat.id}
                   href={`/shop/${slug}`}
                   className={`block text-sm transition-colors ${
@@ -92,7 +93,7 @@ export function ShopFilters({ categories, currentCategory, totalCount }: Props) 
                   }`}
                 >
                   {cat.name}
-                </a>
+                </Link>
               )
             })}
           </div>

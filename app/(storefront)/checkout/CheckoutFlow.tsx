@@ -97,10 +97,16 @@ export function CheckoutFlow() {
       }))
       await supabase.from('order_items').insert(orderItems)
 
-      // Deduct inventory for each item at the routed store
-      const db = supabase as any
+      // Deduct inventory for each item at the routed store.
+      // `decrement_inventory` isn't present in the generated Database types yet,
+      // so the RPC name/args are asserted via a minimal, explicit function signature
+      // instead of casting the whole client to `any`.
+      const decrementInventory = supabase.rpc.bind(supabase) as (
+        fn: 'decrement_inventory',
+        args: { p_product_id: string; p_location_id: string; p_qty: number }
+      ) => PromiseLike<{ error: { message: string } | null }>
       for (const item of items) {
-        await db.rpc('decrement_inventory', {
+        await decrementInventory('decrement_inventory', {
           p_product_id: item.id,
           p_location_id: storeId,
           p_qty: item.quantity,

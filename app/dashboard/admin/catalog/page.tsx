@@ -13,8 +13,20 @@ export default async function AdminCatalogPage() {
     .select('id, name, brand, sku, price, category_id, deleted_at, image_urls, categories(name)')
     .order('created_at', { ascending: false })
 
-  const active = products?.filter(p => !p.deleted_at) ?? []
-  const archived = products?.filter(p => p.deleted_at) ?? []
+  type AdminProduct = {
+    id: string
+    name: string
+    brand: string | null
+    sku: string
+    price: number
+    category_id: string | null
+    deleted_at: string | null
+    image_urls: string[]
+    categories: { name: string } | null
+  }
+
+  const active = products?.filter((p: AdminProduct) => !p.deleted_at) ?? []
+  const archived = products?.filter((p: AdminProduct) => p.deleted_at) ?? []
 
   return (
     <div className="p-8">
@@ -46,12 +58,12 @@ export default async function AdminCatalogPage() {
           <span></span>
         </div>
         <div className="divide-y divide-[#E8E8E4]">
-          {active.map((product: any) => (
+          {active.map((product: AdminProduct) => (
             <div key={product.id} className="grid grid-cols-[40px_1fr_120px_120px_100px_80px] gap-4 px-6 py-3.5 items-center hover:bg-[#F9F9F7] transition-colors">
               <div className="w-8 h-8 bg-arca-bone flex-shrink-0 overflow-hidden relative">
-                {(product as any).image_urls?.[0] && (
+                {product.image_urls?.[0] && (
                   <Image
-                    src={(product as any).image_urls[0]}
+                    src={product.image_urls[0]}
                     alt={product.name}
                     fill
                     className="object-cover"
@@ -64,7 +76,7 @@ export default async function AdminCatalogPage() {
                 <p className="text-sm text-arca-ink">{product.name}</p>
               </div>
               <p className="text-xs font-mono text-arca-stone">{product.sku ?? '—'}</p>
-              <p className="text-xs text-arca-stone">{(product.categories as any)?.name ?? '—'}</p>
+              <p className="text-xs text-arca-stone">{product.categories?.name ?? '—'}</p>
               <p className="text-sm font-mono text-arca-ink text-right">
                 ₹{product.price.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
               </p>

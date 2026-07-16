@@ -15,6 +15,16 @@ const STATUS_STYLE: Record<string, string> = {
   cancelled: 'text-red-700 bg-red-50',
 }
 
+interface OrderRow {
+  id: string
+  order_number: string
+  status: string
+  fulfillment_type: string | null
+  grand_total: number
+  created_at: string
+  clients: { first_name: string | null; last_name: string | null } | null
+}
+
 export default async function ManagerOrdersPage({ searchParams }: { searchParams: SearchParams }) {
   const { filter } = await searchParams
   const supabase = await createClient()
@@ -67,7 +77,7 @@ export default async function ManagerOrdersPage({ searchParams }: { searchParams
         </div>
       ) : (
         <div className="border border-arca-sand divide-y divide-arca-sand">
-          {orders.map((order: any) => (
+          {orders.map((order: OrderRow) => (
             <div key={order.id} className="grid grid-cols-[120px_1fr_120px_140px_100px] gap-4 px-6 py-4 items-center hover:bg-arca-cream transition-colors">
               <p className="text-sm font-mono text-arca-ink">#{order.order_number}</p>
               <div>

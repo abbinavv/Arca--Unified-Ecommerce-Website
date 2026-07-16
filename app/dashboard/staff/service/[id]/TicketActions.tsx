@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import type { Database } from '@/types/supabase'
+
+type ServiceTicketUpdate = Database['public']['Tables']['service_tickets']['Update']
 
 type Ticket = {
   id: string
@@ -39,11 +42,11 @@ export default function TicketActions({ ticket }: Props) {
   const total =
     (parseFloat(labourCost) || 0) + (parseFloat(partsCost) || 0)
 
-  async function updateTicket(updates: Record<string, string | number | null | boolean>) {
+  async function updateTicket(updates: ServiceTicketUpdate) {
     setSaving(true)
     setError(null)
     const supabase = createClient()
-    const { error: err } = await (supabase as any)
+    const { error: err } = await supabase
       .from('service_tickets')
       .update(updates)
       .eq('id', ticket.id)

@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { Metadata } from 'next'
 
 type ReportType = 'orders' | 'inventory' | 'customers'
 
@@ -58,7 +57,14 @@ export default function ReportsPage() {
       .from('inventory')
       .select('id, quantity, reserved_quantity, available_qty, products(name, brand, sku), stores!inventory_location_id_fkey(name)')
       .order('available_qty', { ascending: true })
-    const flat = (data ?? []).map((row: any) => ({
+    type InventoryReportRow = {
+      quantity: number
+      reserved_quantity: number
+      available_qty: number | null
+      products: { name: string; brand: string | null; sku: string } | null
+      stores: { name: string } | null
+    }
+    const flat = ((data ?? []) as InventoryReportRow[]).map(row => ({
       product: row.products?.name ?? '',
       brand: row.products?.brand ?? '',
       sku: row.products?.sku ?? '',

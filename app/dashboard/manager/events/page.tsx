@@ -46,12 +46,21 @@ export default function EventsPage() {
       .eq('store_id', sid)
       .gte('event_date', today)
       .order('event_date')
+      .returns<{
+        id: string
+        name: string
+        event_date: string | null
+        event_time: string | null
+        invited_segment: string | null
+        description: string | null
+        event_rsvps: { count: number }[] | null
+      }[]>()
 
     if (data) {
-      const mapped: BoutiqueEvent[] = data.map((evt: any) => ({
+      const mapped: BoutiqueEvent[] = data.map((evt) => ({
         id: evt.id,
         name: evt.name,
-        event_date: evt.event_date,
+        event_date: evt.event_date ?? '',
         event_time: evt.event_time,
         invited_segment: evt.invited_segment,
         description: evt.description,

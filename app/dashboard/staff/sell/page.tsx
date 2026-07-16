@@ -2,12 +2,15 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { Metadata } from 'next'
 
 type Client = { id: string; first_name: string; last_name: string; email: string }
 type Product = { id: string; name: string; brand: string | null; price: number; sku: string | null }
 type CartItem = Product & { quantity: number }
 type Step = 'client' | 'products' | 'review' | 'done'
+
+function generateOrderNumber() {
+  return `ORD-${Date.now().toString().slice(-8)}`
+}
 
 export default function SellPage() {
   const [step, setStep] = useState<Step>('client')
@@ -83,7 +86,7 @@ export default function SellPage() {
       .eq('id', user!.id)
       .single()
 
-    const num = `ORD-${Date.now().toString().slice(-8)}`
+    const num = generateOrderNumber()
     const clientId = selectedClient.id === 'walkin' ? null : selectedClient.id
 
     const { data: order, error: orderErr } = await supabase

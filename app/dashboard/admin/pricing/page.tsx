@@ -6,8 +6,39 @@ export const metadata: Metadata = { title: 'Pricing — Arca Admin' }
 export default async function PricingPage() {
   const supabase = await createClient()
 
-  const db = supabase as any
-  const [{ data: promotions }, { data: taxRates }] = await Promise.all([
+  type PromotionRule = {
+    id: string
+    code: string
+    description: string | null
+    discount_type: string
+    discount_value: number
+    min_order_amount: number | null
+    max_uses: number | null
+    uses_count: number | null
+    valid_from: string | null
+    valid_until: string | null
+    is_active: boolean
+  }
+
+  type TaxRate = {
+    id: string
+    name: string
+    rate: number
+    region: string | null
+    category: string | null
+    is_active: boolean
+  }
+
+  const db = supabase as unknown as {
+    from: (table: string) => {
+      select: (columns: string) => {
+        order: (column: string, opts?: { ascending: boolean }) => {
+          limit: (n: number) => Promise<{ data: unknown[] | null }>
+        } & Promise<{ data: unknown[] | null }>
+      }
+    }
+  }
+  const [{ data: promotionsRaw }, { data: taxRatesRaw }] = await Promise.all([
     db
       .from('promotion_rules')
       .select('id, code, description, discount_type, discount_value, min_order_amount, max_uses, uses_count, valid_from, valid_until, is_active')
@@ -18,6 +49,8 @@ export default async function PricingPage() {
       .select('id, name, rate, region, category, is_active')
       .order('name'),
   ])
+  const promotions = promotionsRaw as PromotionRule[] | null
+  const taxRates = taxRatesRaw as TaxRate[] | null
 
   return (
     <div className="p-8">
@@ -43,7 +76,7 @@ export default async function PricingPage() {
               <span>Uses</span>
               <span>Status</span>
             </div>
-            {promotions.map((promo: any) => {
+            {promotions.map((promo: PromotionRule) => {
               const isExpired = promo.valid_until && new Date(promo.valid_until) < new Date()
               return (
                 <div key={promo.id} className="grid grid-cols-[120px_1fr_100px_100px_80px_80px] gap-4 px-6 py-3.5 items-center">
@@ -85,7 +118,7 @@ export default async function PricingPage() {
               <span>Category</span>
               <span>Status</span>
             </div>
-            {taxRates.map((tax: any) => (
+            {taxRates.map((tax: TaxRate) => (
               <div key={tax.id} className="grid grid-cols-[1fr_120px_120px_120px_80px] gap-4 px-6 py-3.5 items-center">
                 <p className="text-sm text-arca-ink">{tax.name}</p>
                 <p className="text-sm font-mono text-arca-ink">{tax.rate}%</p>

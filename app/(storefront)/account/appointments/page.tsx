@@ -11,6 +11,16 @@ const STATUS_COLOR: Record<string, string> = {
   cancelled: 'text-red-700 bg-red-50',
 }
 
+type Appointment = {
+  id: string
+  service_type: string | null
+  appointment_date: string | null
+  appointment_time: string | null
+  status: string
+  notes: string | null
+  stores: { name: string; city: string | null } | null
+}
+
 export default async function AppointmentsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -31,10 +41,10 @@ export default async function AppointmentsPage() {
   ])
 
   const upcoming = (appointments ?? []).filter(
-    (a: any) => !a.appointment_date || a.appointment_date >= todayStr
+    (a: Appointment) => !a.appointment_date || a.appointment_date >= todayStr
   )
   const past = (appointments ?? []).filter(
-    (a: any) => a.appointment_date && a.appointment_date < todayStr
+    (a: Appointment) => a.appointment_date && a.appointment_date < todayStr
   )
 
   return (
@@ -50,7 +60,7 @@ export default async function AppointmentsPage() {
         <section className="mb-10">
           <h2 className="text-xs tracking-arca uppercase text-arca-stone mb-4">Upcoming ({upcoming.length})</h2>
           <div className="space-y-3">
-            {upcoming.map((appt: any) => (
+            {upcoming.map((appt: Appointment) => (
               <div key={appt.id} className="border border-arca-sand px-6 py-4 flex items-start justify-between gap-4">
                 <div>
                   <p className="text-sm text-arca-ink capitalize">
@@ -88,7 +98,7 @@ export default async function AppointmentsPage() {
         <section>
           <h2 className="text-xs tracking-arca uppercase text-arca-stone mb-4">Past</h2>
           <div className="space-y-3 opacity-60">
-            {past.map((appt: any) => (
+            {past.map((appt: Appointment) => (
               <div key={appt.id} className="border border-arca-sand px-6 py-4 flex items-start justify-between gap-4">
                 <div>
                   <p className="text-sm text-arca-ink capitalize">
