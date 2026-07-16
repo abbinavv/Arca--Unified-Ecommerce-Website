@@ -174,10 +174,11 @@ function StatCard({ label, value, href }: { label: string; value: string | numbe
 
 function StatusPill({ status }: { status: string }) {
   const map: Record<string, string> = {
-    scheduled: 'text-blue-700',
+    requested: 'text-blue-700',
     confirmed: 'text-green-700',
     completed: 'text-arca-stone',
     cancelled: 'text-red-600',
+    rescheduled: 'text-orange-600',
     intake: 'text-amber-600',
     in_progress: 'text-blue-600',
     awaiting_approval: 'text-orange-600',

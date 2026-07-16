@@ -51,7 +51,7 @@ export function BookAppointmentForm({ stores }: { stores: Store[] }) {
       appointment_date: date,
       appointment_time: time || null,
       notes: notes || null,
-      status: 'scheduled',
+      status: 'requested',
     })
 
     if (insertError) {

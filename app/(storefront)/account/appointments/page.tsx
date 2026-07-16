@@ -5,10 +5,11 @@ import { BookAppointmentForm } from './BookAppointmentForm'
 export const metadata: Metadata = { title: 'Appointments — Arca' }
 
 const STATUS_COLOR: Record<string, string> = {
-  scheduled: 'text-blue-700 bg-blue-50',
+  requested: 'text-blue-700 bg-blue-50',
   confirmed: 'text-green-700 bg-green-50',
   completed: 'text-arca-stone bg-arca-cream',
   cancelled: 'text-red-700 bg-red-50',
+  rescheduled: 'text-orange-700 bg-orange-50',
 }
 
 type Appointment = {
