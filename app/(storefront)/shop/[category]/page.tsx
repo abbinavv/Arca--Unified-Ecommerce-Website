@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { AnimatedProductGrid } from '@/components/storefront/product/AnimatedProductGrid'
 import { ShopFilters } from '@/components/storefront/product/ShopFilters'
@@ -96,12 +97,12 @@ export default async function CategoryPage({
           {products.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-32 text-center">
               <p className="text-sm text-arca-stone mb-2">No products in {label} yet</p>
-              <a
+              <Link
                 href="/shop"
                 className="text-xs tracking-arca uppercase text-arca-gold hover:text-arca-gold-dk transition-colors"
               >
                 Browse all
-              </a>
+              </Link>
             </div>
           ) : (
             <AnimatedProductGrid products={products} />

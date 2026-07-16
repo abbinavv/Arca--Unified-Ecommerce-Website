@@ -15,6 +15,18 @@ const STATUS_COLOR: Record<string, string> = {
   closed: 'text-arca-stone bg-arca-cream',
 }
 
+type ServiceTicket = {
+  id: string
+  ticket_number: string | null
+  type: string
+  status: string
+  condition_notes: string | null
+  estimated_cost: number | null
+  estimate_total: number | null
+  created_at: string
+  products: { name: string | null; brand: string | null } | null
+}
+
 export default async function ServicePage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -47,7 +59,7 @@ export default async function ServicePage() {
             Your Tickets ({tickets.length})
           </h2>
           <div className="space-y-3">
-            {tickets.map((t: any) => (
+            {tickets.map((t: ServiceTicket) => (
               <div key={t.id} className="border border-arca-sand px-6 py-4 flex items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-3 mb-1">

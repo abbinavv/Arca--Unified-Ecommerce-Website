@@ -15,6 +15,17 @@ type WishlistProduct = {
   image_urls: string[] | null
 }
 
+type WishlistRow = {
+  id: string
+  products: {
+    id: string
+    name: string
+    brand: string | null
+    price: number
+    image_urls: string[] | null
+  } | null
+}
+
 export default function WishlistPage() {
   const [items, setItems] = useState<WishlistProduct[]>([])
   const [loading, setLoading] = useState(true)
@@ -34,10 +45,12 @@ export default function WishlistPage() {
         .order('created_at', { ascending: false })
 
       setItems(
-        (data ?? []).map((row: any) => ({
-          wishlistId: row.id,
-          ...row.products,
-        }))
+        (data ?? [])
+          .filter((row: WishlistRow) => row.products !== null)
+          .map((row: WishlistRow) => ({
+            wishlistId: row.id,
+            ...row.products!,
+          }))
       )
       setLoading(false)
     }

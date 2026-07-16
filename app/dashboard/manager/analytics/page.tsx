@@ -28,8 +28,8 @@ export default async function AnalyticsPage() {
       : Promise.resolve({ data: [] }),
   ])
 
-  const rev7 = (orders7 ?? []).reduce((s: number, o: any) => s + Number(o.grand_total), 0)
-  const rev30 = (orders30 ?? []).reduce((s: number, o: any) => s + Number(o.grand_total), 0)
+  const rev7 = (orders7 ?? []).reduce((s: number, o: { grand_total: number }) => s + Number(o.grand_total), 0)
+  const rev30 = (orders30 ?? []).reduce((s: number, o: { grand_total: number }) => s + Number(o.grand_total), 0)
 
   return (
     <div className="p-8">
@@ -64,7 +64,12 @@ export default async function AnalyticsPage() {
         <section>
           <h2 className="text-xs tracking-arca uppercase text-arca-stone mb-4">Top Products by Revenue</h2>
           <div className="border border-arca-sand divide-y divide-arca-sand">
-            {topProducts.map((row: any, i: number) => (
+            {topProducts.map((row: {
+              product_id: string | null
+              quantity: number
+              line_total: number
+              products: { name: string | null; brand: string | null } | null
+            }, i: number) => (
               <div key={row.product_id ?? i} className="flex items-center justify-between px-6 py-3">
                 <div>
                   {row.products?.brand && (

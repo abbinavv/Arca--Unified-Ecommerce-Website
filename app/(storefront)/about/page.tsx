@@ -114,7 +114,7 @@ export default function AboutPage() {
           {/* Quote */}
           <div>
             <blockquote className="font-display text-3xl md:text-4xl font-light text-arca-ink leading-[1.2]">
-              "Every piece chosen with the same scrutiny we apply to our service."
+              &ldquo;Every piece chosen with the same scrutiny we apply to our service.&rdquo;
             </blockquote>
           </div>
 

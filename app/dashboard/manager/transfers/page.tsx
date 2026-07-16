@@ -4,6 +4,16 @@ import { TransferActions } from './TransferActions'
 
 export const metadata: Metadata = { title: 'Transfers — Arca Manager' }
 
+interface TransferRow {
+  id: string
+  quantity: number
+  status: string
+  created_at: string
+  products: { name: string; brand: string | null } | null
+  from_location: { name: string } | null
+  to_location: { name: string } | null
+}
+
 export default async function TransfersPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -18,7 +28,8 @@ export default async function TransfersPage() {
         .select('id, quantity, status, created_at, products(name, brand), from_location:stores!allocations_from_location_id_fkey(name), to_location:stores!allocations_to_location_id_fkey(name)')
         .or(`from_location_id.eq.${storeId},to_location_id.eq.${storeId}`)
         .order('created_at', { ascending: false })
-    : { data: [] }
+        .returns<TransferRow[]>()
+    : { data: [] as TransferRow[] }
 
   const { data: stores } = await supabase
     .from('stores')
@@ -28,7 +39,7 @@ export default async function TransfersPage() {
   return (
     <div className="p-8">
       <TransferActions
-        transfers={(transfers ?? []) as any}
+        transfers={transfers ?? []}
         stores={stores ?? []}
       />
     </div>

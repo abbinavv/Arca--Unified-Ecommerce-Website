@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { Metadata } from 'next'
 
 export default function ProfilePage() {
   const [form, setForm] = useState({

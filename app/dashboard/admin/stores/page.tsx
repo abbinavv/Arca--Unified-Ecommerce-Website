@@ -44,7 +44,20 @@ export default function StoresPage() {
     setStores(data ?? [])
   }
 
-  useEffect(() => { loadStores() }, [])
+  useEffect(() => {
+    let cancelled = false
+    const supabase = createClient()
+    supabase
+      .from('stores')
+      .select('id, name, address, city, region, country, type, is_active')
+      .order('name')
+      .then(({ data }) => {
+        if (!cancelled) setStores(data ?? [])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   function openAdd() {
     setEditingStore(null)

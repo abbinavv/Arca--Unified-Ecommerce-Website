@@ -3,6 +3,18 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Discrepancies — Arca Manager' }
 
+interface DiscrepancyRow {
+  id: string
+  expected_qty: number
+  counted_qty: number
+  variance: number | null
+  discrepancy_type: string | null
+  status: string
+  notes: string | null
+  created_at: string
+  products: { name: string | null; brand: string | null; sku: string | null } | null
+}
+
 export default async function DiscrepanciesPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -33,7 +45,7 @@ export default async function DiscrepanciesPage() {
           </div>
         ) : (
           <div className="border border-arca-sand divide-y divide-arca-sand">
-            {pending.map((row: any) => (
+            {pending.map((row: DiscrepancyRow) => (
               <div key={row.id} className="px-6 py-4 flex items-center justify-between gap-6">
                 <div className="flex-1">
                   {row.products?.brand && (
@@ -53,8 +65,8 @@ export default async function DiscrepanciesPage() {
                   </div>
                   <div className="text-center">
                     <p className="text-[10px] text-arca-stone mb-0.5">Variance</p>
-                    <p className={row.variance < 0 ? 'text-red-700' : 'text-green-700'}>
-                      {row.variance > 0 ? '+' : ''}{row.variance}
+                    <p className={(row.variance ?? 0) < 0 ? 'text-red-700' : 'text-green-700'}>
+                      {(row.variance ?? 0) > 0 ? '+' : ''}{row.variance}
                     </p>
                   </div>
                 </div>
@@ -71,11 +83,11 @@ export default async function DiscrepanciesPage() {
         <section>
           <h2 className="text-xs tracking-arca uppercase text-arca-stone mb-4">Resolved ({resolved.length})</h2>
           <div className="border border-arca-sand divide-y divide-arca-sand opacity-60">
-            {resolved.map((row: any) => (
+            {resolved.map((row: DiscrepancyRow) => (
               <div key={row.id} className="px-6 py-3 flex items-center justify-between gap-4">
                 <p className="text-sm text-arca-ink">{row.products?.name ?? '—'}</p>
                 <span className="text-xs font-mono text-arca-stone">
-                  Variance: {row.variance > 0 ? '+' : ''}{row.variance}
+                  Variance: {(row.variance ?? 0) > 0 ? '+' : ''}{row.variance}
                 </span>
                 <span className="text-[10px] tracking-wide uppercase text-green-700 bg-green-50 px-2 py-1">
                   {row.status}

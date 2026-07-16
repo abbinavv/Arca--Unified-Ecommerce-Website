@@ -44,7 +44,6 @@ export default function LooksPage() {
   const thumbInputRef = useRef<HTMLInputElement>(null)
 
   async function fetchLooks() {
-    setLoading(true)
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { setLoading(false); return }
@@ -57,7 +56,12 @@ export default function LooksPage() {
     setLoading(false)
   }
 
-  useEffect(() => { fetchLooks() }, [])
+  useEffect(() => {
+    async function load() {
+      await fetchLooks()
+    }
+    load()
+  }, [])
 
   async function searchProducts(q: string) {
     if (!q.trim()) { setProductResults([]); return }

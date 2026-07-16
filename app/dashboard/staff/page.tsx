@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { PageTransition, StaggerList, StaggerItem } from '@/components/shared/PageTransition'
+import { PageTransition, StaggerList } from '@/components/shared/PageTransition'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Dashboard — Arca Staff' }
@@ -42,7 +42,7 @@ export default async function StaffDashboard() {
   ])
 
   const isSalesAssociate = staffUser?.role === 'sales_associate'
-  const todaySales = (todayOrders ?? []).reduce((s: number, o: any) => s + Number(o.grand_total), 0)
+  const todaySales = (todayOrders ?? []).reduce((s: number, o: { grand_total: number | string }) => s + Number(o.grand_total), 0)
 
   return (
     <PageTransition>
@@ -81,7 +81,7 @@ export default async function StaffDashboard() {
         {/* Today's appointments */}
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xs tracking-arca uppercase text-arca-stone">Today's Appointments</h2>
+            <h2 className="text-xs tracking-arca uppercase text-arca-stone">Today&apos;s Appointments</h2>
             <Link href="/dashboard/staff/appointments" className="text-xs text-arca-gold hover:text-arca-gold-dk">
               View all →
             </Link>
@@ -90,7 +90,7 @@ export default async function StaffDashboard() {
             <EmptyState text="No appointments today" />
           ) : (
             <div className="divide-y divide-arca-sand border border-arca-sand">
-              {appointments.map((appt: any) => (
+              {appointments.map((appt) => (
                 <div key={appt.id} className="flex items-center justify-between px-4 py-3">
                   <div>
                     <p className="text-sm text-arca-ink">
@@ -120,7 +120,7 @@ export default async function StaffDashboard() {
             <EmptyState text="No open tickets" />
           ) : (
             <div className="divide-y divide-arca-sand border border-arca-sand">
-              {tickets.map((ticket: any) => (
+              {tickets.map((ticket) => (
                 <Link
                   key={ticket.id}
                   href={`/dashboard/staff/service/${ticket.id}`}

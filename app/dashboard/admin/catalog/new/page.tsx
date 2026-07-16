@@ -4,10 +4,15 @@ import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 
 type Category = { id: string; name: string }
 
 const SUPABASE_URL = 'https://kpgjktaxddcbsvbowxwx.supabase.co'
+
+function buildUploadPath(file: File): string {
+  return `products/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`
+}
 
 export default function NewProductPage() {
   const router = useRouter()
@@ -37,7 +42,7 @@ export default function NewProductPage() {
     const urlKey = (['image_url_1', 'image_url_2', 'image_url_3'] as const)[index]
     setUploading(prev => { const n = [...prev]; n[index] = true; return n })
     const supabase = createClient()
-    const path = `products/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`
+    const path = buildUploadPath(file)
     const { error: uploadError } = await supabase.storage
       .from('product-images')
       .upload(path, file, { upsert: true })
@@ -153,7 +158,14 @@ export default function NewProductPage() {
                 <div key={i} className="space-y-2">
                   <div className="flex items-center gap-3">
                     {previews[i] && (
-                      <img src={previews[i]!} alt={`Preview ${i + 1}`} className="w-10 h-10 object-cover border border-[#E8E8E4] flex-shrink-0" />
+                      <Image
+                        src={previews[i]!}
+                        alt={`Preview ${i + 1}`}
+                        width={40}
+                        height={40}
+                        unoptimized={!previews[i]!.startsWith(SUPABASE_URL)}
+                        className="w-10 h-10 object-cover border border-[#E8E8E4] flex-shrink-0"
+                      />
                     )}
                     <div className="flex-1">
                       <input

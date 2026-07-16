@@ -56,10 +56,22 @@ export default function UsersPage() {
   }, [])
 
   useEffect(() => {
-    loadUsers()
+    let cancelled = false
     const supabase = createClient()
-    supabase.from('stores').select('id, name, city').order('name').then(({ data }) => setStores(data ?? []))
-  }, [loadUsers])
+    supabase
+      .from('users')
+      .select('id, first_name, last_name, email, role, created_at, stores(name)')
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        if (!cancelled) setStaffUsers((data as StaffUser[]) ?? [])
+      })
+    supabase.from('stores').select('id, name, city').order('name').then(({ data }) => {
+      if (!cancelled) setStores(data ?? [])
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const needsStore = form.role && form.role !== 'corporate_admin'
 

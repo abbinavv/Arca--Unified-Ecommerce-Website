@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 
 interface ProductGalleryProps {
   images: string[]
@@ -49,10 +50,13 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           onClick={openLightbox}
         >
           {activeImage ? (
-            <img
+            <Image
               src={activeImage}
               alt={productName}
-              className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              priority
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
             />
           ) : (
             <div className="absolute inset-0 bg-arca-bone flex items-center justify-center">
@@ -112,14 +116,16 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 key={i}
                 onClick={() => { setActiveIndex(i) }}
                 aria-label={`View image ${i + 1}`}
-                className={`flex-shrink-0 w-16 h-16 overflow-hidden border transition-colors duration-150 ${
+                className={`relative flex-shrink-0 w-16 h-16 overflow-hidden border transition-colors duration-150 ${
                   i === activeIndex ? 'border-arca-ink' : 'border-arca-sand hover:border-arca-stone'
                 }`}
               >
-                <img
+                <Image
                   src={url}
                   alt={`${productName} ${i + 1}`}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="64px"
+                  className="object-cover"
                 />
               </button>
             ))}
@@ -145,14 +151,16 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
           {/* Image */}
           <div
-            className="relative max-w-4xl max-h-[90vh] w-full mx-16 flex items-center justify-center"
+            className="relative max-w-4xl h-[85vh] w-full mx-16 flex items-center justify-center"
             onClick={e => e.stopPropagation()}
           >
             {activeImage && (
-              <img
+              <Image
                 src={activeImage}
                 alt={productName}
-                className="max-w-full max-h-[85vh] object-contain"
+                fill
+                sizes="90vw"
+                className="object-contain"
               />
             )}
           </div>
