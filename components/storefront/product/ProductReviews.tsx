@@ -101,7 +101,7 @@ export function ProductReviews({ productId }: { productId: string }) {
       customer_id: userId,
       customer_name: userName,
       rating: form.rating,
-      title: form.title || null,
+      title: form.title || undefined,
       comment: form.comment,
       status: 'pending',
     })

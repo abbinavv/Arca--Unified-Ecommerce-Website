@@ -43,11 +43,11 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // Send confirmation email via standard signUp (triggers Supabase email)
-  await supabase.auth.admin.generateLink({
+  // Send the Supabase signup confirmation email for the unconfirmed user
+  await supabase.auth.resend({
     type: 'signup',
     email,
-    options: { redirectTo: `${req.nextUrl.origin}/auth/verify` },
+    options: { emailRedirectTo: `${req.nextUrl.origin}/auth/verify` },
   })
 
   return NextResponse.json({ success: true })
